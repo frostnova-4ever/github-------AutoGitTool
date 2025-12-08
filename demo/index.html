@@ -76,11 +76,7 @@
 
                     <div class="file-manager compact">
                         <div style="padding: 10px; border-bottom: 1px solid var(--border-color);">
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <input type="text" id="filemanager-path-input" placeholder="输入路径（例如：/或C:\\）" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;">
-                                <button id="filemanager-list-btn" class="control-btn primary" style="padding: 8px 16px;">列出</button>
-                                <button id="test-list-paths-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">测试路径列表</button>
-                            </div>
+                            <!-- 路径输入框已移除 -->
                         </div>
                         <div class="file-header">
                             <div class="file-header-item file-size">大小</div>
@@ -146,17 +142,13 @@
 
             <!-- 右侧面板文件列表 -->
             <div class="right-file-list-container" style="padding: 10px; border-bottom: 1px solid var(--border-color); max-height: 300px; overflow-y: auto;">
-                <div class="file-header" style="display: flex; font-weight: bold; padding: 5px 0; border-bottom: 1px solid var(--border-color);">
-                    <div class="file-header-item" style="flex: 1;">名称</div>
-                    <div class="file-header-item" style="width: 120px;">大小</div>
-                </div>
                 <div id="right-file-list" class="file-list" style="margin-top: 5px;"></div>
             </div>
 
             <div class="fixed-container">
                 <div class="control-section">
                     <div class="control-row">
-                        <button class="control-btn" id="refresh-btn">刷新</button>
+                        <button class="control-btn" id="clear-btn">清空</button>
                         <input type="text" class="url-input" placeholder="搜索文件...">
                     </div>
                 </div>
@@ -170,6 +162,7 @@
         </div>
     </div>
 
+    <script src="file-operations.js"></script>
     <script src="appfunc.js"></script>
 </body>
 
