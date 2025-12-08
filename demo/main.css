@@ -1,0 +1,111 @@
+.plain-link {
+            background: none;
+            border: none;
+            color: var(--link-color, #0066cc);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font: inherit;
+            display: inline;
+        }
+        
+        .plain-link:hover {
+            color: var(--link-hover-color, #004499);
+            text-decoration: none;
+        }
+        /* 添加主界面标识样式 */
+        
+        .main-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #4CAF50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        /* 新增的按钮组样式 */
+        
+        .scm-button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .scm-button-group .scm-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background: #f5f5f5;
+            cursor: pointer;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .scm-button-group .scm-btn.primary {
+            background: #007acc;
+            color: white;
+            border-color: #007acc;
+        }
+        
+        .scm-button-group .scm-btn.auto {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .scm-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: stretch;
+            width: 100%;
+            max-width: 520px;
+        }
+        
+        .scm-commit-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color, #ccc);
+            border-radius: 4px;
+            box-sizing: border-box;
+            background: var(--input-bg, #fff);
+        }
+        /* Compact file list: only show size column */
+        
+        .file-manager.compact .file-header,
+        .file-manager.compact .file-item-detailed {
+            display: grid !important;
+            grid-template-columns: 80px 1fr !important;
+            /* 左：大小，右：名称 */
+            padding: 8px 12px !important;
+            gap: 8px !important;
+            align-items: center;
+        }
+        
+        .file-manager.compact .file-header-item,
+        .file-manager.compact .file-cell {
+            padding: 4px 8px !important;
+            display: block !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-manager.compact .file-size {
+            text-align: left !important;
+            font-weight: 600;
+            min-width: 60px;
+        }
+        
+        .file-manager.compact .file-name {
+            text-align: left !important;
+            color: var(--text-primary);
+        }

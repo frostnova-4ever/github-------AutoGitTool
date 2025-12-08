@@ -10,18 +10,22 @@
         
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
+            height: calc(100vh - 20px);
+            display: flex;
+            flex-direction: column;
         }
         /* 工具栏 */
         
         #toolbar {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding: 10px;
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
         }
         
         #toolbar button {
@@ -42,12 +46,13 @@
         #canvas-container {
             position: relative;
             width: 100%;
-            height: 600px;
+            height: calc(100vh - 100px);
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 5px;
             overflow: hidden;
             cursor: grab;
+            flex-grow: 1;
         }
         
         #canvas-container:active {
@@ -277,11 +282,10 @@
 
             // 画布鼠标按下事件
             onCanvasMouseDown(e) {
-                if (e.target === this.canvasContainer || e.target === this.canvas) {
-                    this.isDraggingCanvas = true;
-                    this.canvasStartX = e.clientX - this.canvasOffsetX;
-                    this.canvasStartY = e.clientY - this.canvasOffsetY;
-                }
+                // 只要在canvasContainer内点击，就触发画布拖动
+                this.isDraggingCanvas = true;
+                this.canvasStartX = e.clientX - this.canvasOffsetX;
+                this.canvasStartY = e.clientY - this.canvasOffsetY;
             }
 
             // 节点鼠标按下事件
@@ -304,6 +308,8 @@
                     this.canvasOffsetY = e.clientY - this.canvasStartY;
                     this.updateViewport();
                     this.updateViewportInfo();
+                    // 拖动画布时重新绘制连接线
+                    this.drawConnections();
                 } else if (this.isDraggingNode && this.activeNode) {
                     this.updateNodePosition(e);
                 }
