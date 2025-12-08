@@ -269,6 +269,84 @@ class Api:
         except Exception as e:
             print(f"打开文件夹对话框失败: {str(e)}")
             return None
+    
+    def execute_command(self, command, cwd=None):
+        """
+        API方法：执行系统命令
+        
+        Args:
+            command (str): 要执行的命令字符串
+            cwd (str): 命令执行的当前工作目录
+            
+        Returns:
+            dict: 包含命令输出、错误和新工作目录的结果
+        """
+        import subprocess
+        import shlex
+        
+        try:
+            # 如果没有指定工作目录，使用当前目录
+            if not cwd:
+                cwd = os.getcwd()
+            
+            # 处理cd命令的特殊情况
+            if command.strip().lower().startswith('cd '):
+                new_dir = command.strip()[3:]
+                # 处理相对路径
+                if new_dir.startswith('.') or not os.path.isabs(new_dir):
+                    new_dir = os.path.join(cwd, new_dir)
+                # 标准化路径
+                new_dir = os.path.normpath(new_dir)
+                # 检查路径是否存在
+                if os.path.exists(new_dir) and os.path.isdir(new_dir):
+                    return {
+                        "output": f"切换到目录: {new_dir}",
+                        "error": "",
+                        "cwd": new_dir
+                    }
+                else:
+                    return {
+                        "output": "",
+                        "error": f"目录不存在: {new_dir}",
+                        "cwd": cwd
+                    }
+            
+            # 执行其他命令
+            # 根据操作系统选择shell
+            if os.name == 'nt':  # Windows
+                process = subprocess.Popen(
+                    command,
+                    cwd=cwd,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+            else:  # Linux/macOS
+                process = subprocess.Popen(
+                    shlex.split(command),
+                    cwd=cwd,
+                    shell=False,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+            
+            # 获取命令输出和错误
+            stdout, stderr = process.communicate()
+            
+            return {
+                "output": stdout,
+                "error": stderr,
+                "cwd": cwd
+            }
+            
+        except Exception as e:
+            return {
+                "output": "",
+                "error": f"执行命令失败: {str(e)}",
+                "cwd": cwd
+            }
 
 def on_window_loaded():
     """

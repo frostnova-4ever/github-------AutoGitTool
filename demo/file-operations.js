@@ -7,16 +7,186 @@ const fileIcons = {
     document: '<svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"/></svg>'
 };
 
+// 当前工作目录
+let currentWorkingDirectory = 'C:\\Users\\Documents';
+
 // 向终端添加消息
 function appendTerminal(msg, level = 'info') {
-    const t = document.querySelector('.terminal-content');
-    if (!t) return;
-    const el = document.createElement('div');
-    el.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
-    if (level === 'success') el.classList.add('status-success');
-    if (level === 'error') el.classList.add('status-error');
-    t.appendChild(el);
-    t.scrollTop = t.scrollHeight;
+    const terminalContent = document.getElementById('terminal-content');
+    if (!terminalContent) return;
+
+    const line = document.createElement('div');
+    line.className = `terminal-line ${level}`;
+    line.textContent = msg;
+
+    terminalContent.appendChild(line);
+    terminalContent.scrollTop = terminalContent.scrollHeight;
+}
+
+// 处理终端输入
+function handleTerminalInput() {
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalContent = document.getElementById('terminal-content');
+
+    if (!terminalInput || !terminalContent) return;
+
+    // 获取用户输入的命令
+    const command = terminalInput.value.trim();
+    if (!command) return;
+
+    // 显示用户输入的命令
+    const userInputLine = document.createElement('div');
+    userInputLine.className = 'terminal-line user-input';
+    userInputLine.innerHTML = `<span class="prompt">$</span> ${command}`;
+    terminalContent.appendChild(userInputLine);
+
+    // 清空输入框
+    terminalInput.value = '';
+
+    // 执行命令
+    executeCommand(command);
+
+    // 滚动到底部
+    terminalContent.scrollTop = terminalContent.scrollHeight;
+}
+
+// 执行命令
+function executeCommand(command) {
+    // 发送命令到Python后端执行
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.execute_command(command, currentWorkingDirectory)
+            .then(response => {
+                // 显示命令输出
+                if (response.output) {
+                    appendTerminal(response.output, 'info');
+                }
+                // 显示命令错误
+                if (response.error) {
+                    appendTerminal(response.error, 'error');
+                }
+                // 更新当前工作目录
+                if (response.cwd) {
+                    currentWorkingDirectory = response.cwd;
+                }
+            })
+            .catch(error => {
+                appendTerminal(`执行命令失败: ${error}`, 'error');
+            });
+    } else {
+        // 如果pywebview API不可用，使用模拟实现
+        appendTerminal(`执行命令: ${command}`, 'info');
+        appendTerminal('(仅模拟模式 - 实际命令需在完整环境中执行)', 'warning');
+    }
+}
+
+// 执行 ls 命令
+function executeLs(args) {
+    // 如果有路径参数，使用该路径，否则使用当前目录
+    const path = args.length > 0 ? args[0] : currentWorkingDirectory;
+
+    // 调用 webview API 获取文件列表
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.get_files(path)
+            .then(response => {
+                if (response.error) {
+                    appendTerminal(`错误: ${response.error}`, 'error');
+                } else {
+                    if (Array.isArray(response.contents)) {
+                        response.contents.forEach(f => {
+                            let line = '';
+                            if (f.is_file) {
+                                line = `${f.name} (${f.size_formatted})`;
+                            } else {
+                                line = `${f.name}/`;
+                            }
+                            appendTerminal(line, 'info');
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                appendTerminal(`获取文件列表失败: ${error}`, 'error');
+            });
+    } else {
+        // 模拟输出
+        appendTerminal('模拟文件列表:', 'info');
+        appendTerminal('file1.txt (1.2 KB)', 'info');
+        appendTerminal('file2.js (3.4 KB)', 'info');
+        appendTerminal('folder1/', 'info');
+        appendTerminal('folder2/', 'info');
+    }
+}
+
+// 执行 pwd 命令
+function executePwd() {
+    appendTerminal(currentWorkingDirectory, 'info');
+}
+
+// 执行 cd 命令
+function executeCd(args) {
+    if (args.length === 0) {
+        // 切换到用户目录
+        currentWorkingDirectory = 'C:\\Users\\';
+    } else if (args[0] === '..') {
+        // 切换到父目录
+        const parts = currentWorkingDirectory.split('\\');
+        if (parts.length > 1) {
+            parts.pop();
+            currentWorkingDirectory = parts.join('\\');
+        }
+    } else {
+        // 切换到指定目录
+        const newPath = args[0].startsWith('\\') ? args[0] : `${currentWorkingDirectory}\\${args[0]}`;
+        currentWorkingDirectory = newPath;
+    }
+    appendTerminal(currentWorkingDirectory, 'info');
+}
+
+// 执行 clear 命令
+function executeClear() {
+    const terminalContent = document.getElementById('terminal-content');
+    if (terminalContent) {
+        terminalContent.innerHTML = '';
+        appendTerminal('欢迎使用系统终端!', 'success');
+        appendTerminal('您可以执行任何系统命令，例如: dir, cd, mkdir, python 等。', 'info');
+        appendTerminal('输入 help 查看系统命令帮助。', 'info');
+        appendTerminal('当前工作目录: ' + currentWorkingDirectory, 'info');
+        appendTerminal('', 'info');
+    }
+}
+
+// 执行 help 命令
+function executeHelp() {
+    appendTerminal('可用命令:', 'info');
+    appendTerminal('ls [path] - 列出文件和目录', 'info');
+    appendTerminal('pwd - 显示当前工作目录', 'info');
+    appendTerminal('cd [path] - 切换目录', 'info');
+    appendTerminal('clear - 清空终端', 'info');
+    appendTerminal('help - 显示帮助信息', 'info');
+}
+
+// 初始化终端
+function initTerminal() {
+    const terminalInput = document.getElementById('terminal-input');
+
+    if (terminalInput) {
+        // 添加回车键事件监听
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleTerminalInput();
+            }
+        });
+
+        // 显示欢迎信息
+        appendTerminal('欢迎使用系统终端!', 'success');
+        appendTerminal('您可以执行任何系统命令，例如: dir, cd, mkdir, python 等。', 'info');
+        appendTerminal('输入 help 查看系统命令帮助。', 'info');
+        appendTerminal('当前工作目录: ' + currentWorkingDirectory, 'info');
+        appendTerminal('', 'info');
+
+        // 自动聚焦到输入框
+        terminalInput.focus();
+    }
 }
 
 // 选择文件夹功能

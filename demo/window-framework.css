@@ -228,8 +228,66 @@ body {
     color: var(--text-primary);
 }
 
+.terminal {
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    border-radius: 6px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
 .terminal-content {
     white-space: pre-wrap;
+    margin-bottom: 10px;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+}
+
+.prompt {
+    color: #4EC9B0;
+    margin-right: 8px;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+}
+
+.terminal-input:focus {
+    outline: none;
+}
+
+/* 为终端输出添加不同类型的样式 */
+.terminal-line {
+    margin: 2px 0;
+}
+
+.terminal-line.info {
+    color: #D4D4D4;
+}
+
+.terminal-line.success {
+    color: #4EC9B0;
+}
+
+.terminal-line.error {
+    color: #F48771;
+}
+
+.terminal-line.warning {
+    color: #FFD700;
 }
 
 

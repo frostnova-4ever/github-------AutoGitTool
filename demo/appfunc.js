@@ -95,10 +95,8 @@ function setupUI() {
     const clearBtn = document.getElementById('clear-btn');
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
-            const terminalContent = document.querySelector('.terminal-content');
-            if (terminalContent) {
-                terminalContent.innerHTML = '';
-            }
+            // 调用终端的clear命令
+            executeClear();
         });
     }
 
@@ -159,6 +157,11 @@ function setupAdditionalEventListeners() {
         console.log('_pywebviewready事件触发，重新加载常用路径');
         loadCommonPaths();
     });
+
+    // 初始化终端
+    if (typeof initTerminal === 'function') {
+        initTerminal();
+    }
 
     // 测试按钮已移除，不再需要此事件监听器
 }
