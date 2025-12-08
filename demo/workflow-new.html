@@ -5,14 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工作流编辑器</title>
+    <link rel="stylesheet" href="default-theme.css">
     <style>
-        /* 基础样式 */
+        /* 工作流特定样式 */
         
         body {
             margin: 0;
             padding: 10px;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
             height: calc(100vh - 20px);
             display: flex;
             flex-direction: column;
@@ -31,7 +30,7 @@
         #toolbar button {
             margin-right: 10px;
             padding: 8px 15px;
-            background-color: #4285f4;
+            background-color: var(--primary-color);
             color: white;
             border: none;
             border-radius: 4px;
@@ -39,7 +38,7 @@
         }
         
         #toolbar button:hover {
-            background-color: #3367d6;
+            background-color: #2980b9;
         }
         /* 画布容器 */
         
@@ -84,7 +83,7 @@
             width: 150px;
             padding: 15px;
             background-color: #fff;
-            border: 2px solid #4285f4;
+            border: 2px solid var(--primary-color);
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             cursor: move;

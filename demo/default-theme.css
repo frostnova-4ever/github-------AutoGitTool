@@ -1,0 +1,181 @@
+/* 默认主题样式 - 页面美化部分 */
+
+
+/* 独特的链接样式 */
+
+.plain-link {
+    background: none;
+    border: none;
+    color: var(--link-color, #0066cc);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+    display: inline;
+}
+
+.plain-link:hover {
+    color: var(--link-hover-color, #004499);
+    text-decoration: none;
+}
+
+
+/* 主界面标识样式 */
+
+.main-indicator {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #4CAF50;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+
+/* 提交输入框样式 */
+
+.scm-commit-input {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #fff, var(--panel-bg));
+}
+
+.scm-commit-input::placeholder {
+    color: var(--muted);
+}
+
+.scm-commit-input:focus {
+    outline: none;
+    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.08);
+    border-color: rgba(52, 152, 219, 0.9);
+}
+
+
+/* 输入框美化 */
+
+#github-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#github-input:focus {
+    outline: none;
+    border-color: rgba(52, 152, 219, 0.9);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.05);
+}
+
+
+/* 按钮美化 */
+
+.control-btn {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.control-btn:hover {
+    background-color: #2980b9;
+}
+
+#list-btn {
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    border-radius: 6px;
+    padding: 8px 14px;
+}
+
+#github-btn {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 0;
+    font-size: 14px;
+}
+
+#github-btn:hover {
+    filter: brightness(0.95);
+}
+
+
+/* 菜单美化 */
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 8px 10px;
+    margin-bottom: 3px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.menu-item:hover {
+    background-color: #e0e0e0;
+}
+
+.menu-item.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+
+/* 加载动画 */
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--white);
+}
+
+.logo-loader-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}

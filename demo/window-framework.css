@@ -13,7 +13,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
+    padding: 0;
     user-select: none;
 }
 
@@ -49,27 +49,30 @@ body {
     overflow: hidden;
 }
 
-.left-panel {
-    flex: 1;
-    display: flex;
-    border-right: 1px solid var(--border-color);
-    overflow: hidden;
-}
 
-.left-sidebar {
+/* 左侧面板：仅包含侧边栏 */
+
+.left-panel {
     width: 200px;
-    background: var(--light-bg);
+    background-color: var(--light-bg);
     border-right: 1px solid var(--border-color);
-    padding: 15px;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
 }
 
-.left-content {
+.left-sidebar {
+    padding: 15px;
+}
+
+
+/* 中栏：主要内容区域 */
+
+.middle-panel {
     flex: 1;
-    padding: 0;
-    overflow-y: hidden;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .left-page {
@@ -81,7 +84,9 @@ body {
     overflow: hidden;
 }
 
+
 /* 工作流页面特定样式 */
+
 #page-workflow {
     padding: 0;
     overflow: hidden;
@@ -138,10 +143,7 @@ body {
     font-size: 14px;
 }
 
-
-/* 专用路径输入样式（更明显） */
-
-#path-input {
+#right-panel-path-input {
     padding: 8px 12px;
     border-radius: 6px;
     border: 1px solid var(--border-color);
@@ -149,7 +151,26 @@ body {
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-#path-input:focus {
+#right-panel-path-input:focus {
+    outline: none;
+    border-color: rgba(52, 152, 219, 0.9);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
+}
+
+
+/* 专用路径输入样式（更明显） */
+
+#path-input,
+#filemanager-path-input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.02);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#path-input:focus,
+#filemanager-path-input:focus {
     outline: none;
     border-color: rgba(52, 152, 219, 0.9);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
@@ -162,29 +183,6 @@ body {
     background: linear-gradient(180deg, var(--primary-color), #2a88c6);
     border-radius: 6px;
     padding: 8px 14px;
-}
-
-
-/* 终端视觉改进 */
-
-.terminal {
-    height: 200px;
-    overflow: auto;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: var(--terminal-text);
-    background: linear-gradient(180deg, var(--terminal-bg), #071018);
-    padding: 12px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.terminal .status-success {
-    color: #8be78b;
-}
-
-.terminal .status-error {
-    color: #ffb3b3;
 }
 
 
@@ -202,31 +200,23 @@ body {
 /* 自定义滚动条（WebKit/Chromium） */
 
 .terminal::-webkit-scrollbar,
-.file-list::-webkit-scrollbar,
 .left-sidebar::-webkit-scrollbar {
     height: 10px;
     width: 10px;
 }
 
 .terminal::-webkit-scrollbar-thumb,
-.file-list::-webkit-scrollbar-thumb,
 .left-sidebar::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
 }
 
-.terminal::-webkit-scrollbar-track,
-.file-list::-webkit-scrollbar-track {
+.terminal::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.terminal {
-    height: 200px;
-    overflow: auto;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: var(--text-primary);
-}
+
+/* 终端样式优化 */
 
 .terminal {
     background-color: #1E1E1E;
@@ -238,6 +228,7 @@ body {
     border-radius: 6px;
     overflow-y: auto;
     max-height: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .terminal-content {
@@ -269,7 +260,9 @@ body {
     outline: none;
 }
 
+
 /* 为终端输出添加不同类型的样式 */
+
 .terminal-line {
     margin: 2px 0;
 }
