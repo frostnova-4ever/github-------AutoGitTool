@@ -1,0 +1,302 @@
+body {
+    background: #f5f5f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.title-bar {
+    background: var(--dark-bg);
+    color: var(--white);
+    height: 38px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    user-select: none;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.window-btn {
+    width: 46px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: transparent;
+    border: none;
+    color: var(--white);
+}
+
+.window-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-btn:hover {
+    background-color: var(--danger-color);
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.left-panel {
+    flex: 1;
+    display: flex;
+    border-right: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.left-sidebar {
+    width: 200px;
+    background: var(--light-bg);
+    border-right: 1px solid var(--border-color);
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.left-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.fixed-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.control-section {
+    margin-bottom: 10px;
+}
+
+.control-row {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.control-btn:hover {
+    background-color: #2980b9;
+}
+
+.url-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+
+/* 专用路径输入样式（更明显） */
+
+#path-input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.02);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#path-input:focus {
+    outline: none;
+    border-color: rgba(52, 152, 219, 0.9);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
+}
+
+
+/* 列出按钮更醒目 */
+
+#list-btn {
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    border-radius: 6px;
+    padding: 8px 14px;
+}
+
+
+/* 终端视觉改进 */
+
+.terminal {
+    height: 200px;
+    overflow: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--terminal-text);
+    background: linear-gradient(180deg, var(--terminal-bg), #071018);
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.terminal .status-success {
+    color: #8be78b;
+}
+
+.terminal .status-error {
+    color: #ffb3b3;
+}
+
+
+/* 更紧凑的控制行布局 */
+
+.control-row>* {
+    margin-right: 8px;
+}
+
+.control-row>*:last-child {
+    margin-right: 0;
+}
+
+
+/* 自定义滚动条（WebKit/Chromium） */
+
+.terminal::-webkit-scrollbar,
+.file-list::-webkit-scrollbar,
+.left-sidebar::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.terminal::-webkit-scrollbar-thumb,
+.file-list::-webkit-scrollbar-thumb,
+.left-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+}
+
+.terminal::-webkit-scrollbar-track,
+.file-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal {
+    height: 200px;
+    overflow: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.terminal-content {
+    white-space: pre-wrap;
+}
+
+
+/* GitHub 输入样式与按钮：与路径输入风格一致 */
+
+#github-input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+#github-input:focus {
+    outline: none;
+    border-color: rgba(52, 152, 219, 0.9);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.05);
+}
+
+#github-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+}
+
+#github-btn:hover {
+    filter: brightness(0.95);
+}
+
+
+/* 菜单样式 */
+
+.menu-list {
+    list-style: none;
+}
+
+.menu-item {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #e0e0e0;
+}
+
+.menu-item.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+
+/* 加载动画 */
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--white);
+}
+
+.logo-loader-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}

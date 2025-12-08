@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作流编辑器</title>
+    <style>
+        /* 基础样式 */
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        /* 工具栏 */
+        
+        #toolbar {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        #toolbar button {
+            margin-right: 10px;
+            padding: 8px 15px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #toolbar button:hover {
+            background-color: #3367d6;
+        }
+        /* 画布容器 */
+        
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: grab;
+        }
+        
+        #canvas-container:active {
+            cursor: grabbing;
+        }
+        /* 节点区域 */
+        
+        #nodes-area {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: 0 0;
+        }
+        /* 连接线画布 */
+        
+        #connections-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* 节点样式 */
+        
+        .node {
+            position: absolute;
+            width: 150px;
+            padding: 15px;
+            background-color: #fff;
+            border: 2px solid #4285f4;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: move;
+            z-index: 2;
+            user-select: none;
+        }
+        
+        .node:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        /* 根节点样式 */
+        
+        .node.root {
+            border-color: #34a853;
+            background-color: #f1f8e9;
+        }
+        /* 视口信息 */
+        
+        #viewport-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 12px;
+            border-radius: 3px;
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toolbar">
+        <button onclick="workflow.zoomIn()">放大</button>
+        <button onclick="workflow.zoomOut()">缩小</button>
+        <button onclick="workflow.resetView()">重置视图</button>
+        <button onclick="workflow.exportLayout()">导出布局</button>
+    </div>
+
+    <div id="canvas-container">
+        <div id="nodes-area">
+            <div id="node1" class="node root" style="left: 50px; top: 100px;">
+                <h3>根节点</h3>
+                <p>这是根节点</p>
+            </div>
+            <div id="node2" class="node" style="left: 250px; top: 50px;">
+                <h3>子节点1</h3>
+                <p>连接到根节点</p>
+            </div>
+            <div id="node3" class="node" style="left: 250px; top: 200px;">
+                <h3>子节点2</h3>
+                <p>连接到根节点</p>
+            </div>
+            <div id="node4" class="node" style="left: 450px; top: 250px;">
+                <h3>子节点3</h3>
+                <p>连接到子节点2</p>
+            </div>
+            <div id="node5" class="node" style="left: 450px; top: 350px;">
+                <h3>子节点4</h3>
+                <p>连接到子节点2</p>
+            </div>
+            <div id="node6" class="node" style="left: 450px; top: 450px;">
+                <h3>子节点5</h3>
+                <p>连接到子节点2</p>
+            </div>
+        </div>
+        <canvas id="connections-canvas"></canvas>
+        <div id="viewport-info">视口: X=0, Y=0, 缩放: 100%</div>
+    </div>
+
+    <script>
+        // 工作流编辑器主类
+        class WorkflowEditor {
+            constructor() {
+                this.canvasContainer = null;
+                this.nodesArea = null;
+                this.canvas = null;
+                this.ctx = null;
+                this.viewportInfo = null;
+
+                // 状态管理
+                this.nodes = [];
+                this.connections = [];
+
+                // 交互状态
+                this.isDraggingCanvas = false;
+                this.isDraggingNode = false;
+                this.activeNode = null;
+
+                // 视图状态
+                this.canvasOffsetX = 0;
+                this.canvasOffsetY = 0;
+                this.zoomLevel = 1.0;
+
+                // 偏移量
+                this.nodeOffsetX = 0;
+                this.nodeOffsetY = 0;
+                this.canvasStartX = 0;
+                this.canvasStartY = 0;
+
+                this.init();
+            }
+
+            // 初始化
+            init() {
+                this.canvasContainer = document.getElementById('canvas-container');
+                this.nodesArea = document.getElementById('nodes-area');
+                this.canvas = document.getElementById('connections-canvas');
+                this.viewportInfo = document.getElementById('viewport-info');
+
+                if (!this.canvasContainer || !this.nodesArea || !this.canvas) {
+                    console.error('缺少必要的DOM元素');
+                    return;
+                }
+
+                this.ctx = this.canvas.getContext('2d');
+
+                // 初始化节点
+                this.initNodes();
+
+                // 初始化连接关系
+                this.initConnections();
+
+                // 设置画布
+                this.setupCanvas();
+
+                // 绑定事件
+                this.bindEvents();
+
+                // 绘制连接线
+                this.drawConnections();
+
+                // 更新视口信息
+                this.updateViewportInfo();
+            }
+
+            // 初始化节点
+            initNodes() {
+                // 获取所有节点元素
+                const nodeElements = document.querySelectorAll('.node');
+                this.nodes = Array.from(nodeElements);
+            }
+
+            // 初始化连接关系
+            initConnections() {
+                // 定义节点连接关系 (parentId, childId)
+                const connectionDefs = [
+                    ['node1', 'node2'],
+                    ['node1', 'node3'],
+                    ['node3', 'node4'],
+                    ['node3', 'node5'],
+                    ['node3', 'node6']
+                ];
+
+                // 创建连接对象
+                this.connections = connectionDefs.map(([parentId, childId]) => {
+                    return {
+                        parent: this.nodes.find(node => node.id === parentId),
+                        child: this.nodes.find(node => node.id === childId)
+                    };
+                }).filter(conn => conn.parent && conn.child);
+            }
+
+            // 设置画布
+            setupCanvas() {
+                // 设置canvas尺寸与容器一致
+                this.canvas.width = this.canvasContainer.clientWidth;
+                this.canvas.height = this.canvasContainer.clientHeight;
+
+                // 更新视口
+                this.updateViewport();
+            }
+
+            // 更新视口
+            updateViewport() {
+                this.nodesArea.style.transform = `translate(${this.canvasOffsetX}px, ${this.canvasOffsetY}px) scale(${this.zoomLevel})`;
+            }
+
+            // 绑定事件
+            bindEvents() {
+                // 画布拖动事件
+                this.canvasContainer.addEventListener('mousedown', (e) => this.onCanvasMouseDown(e));
+                document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+                document.addEventListener('mouseup', () => this.onMouseUp());
+
+                // 节点拖动事件
+                this.nodes.forEach(node => {
+                    node.addEventListener('mousedown', (e) => this.onNodeMouseDown(e, node));
+                });
+
+                // 窗口大小变化事件
+                window.addEventListener('resize', () => this.setupCanvas());
+            }
+
+            // 画布鼠标按下事件
+            onCanvasMouseDown(e) {
+                if (e.target === this.canvasContainer || e.target === this.canvas) {
+                    this.isDraggingCanvas = true;
+                    this.canvasStartX = e.clientX - this.canvasOffsetX;
+                    this.canvasStartY = e.clientY - this.canvasOffsetY;
+                }
+            }
+
+            // 节点鼠标按下事件
+            onNodeMouseDown(e, node) {
+                this.isDraggingNode = true;
+                this.activeNode = node;
+
+                // 计算鼠标相对于节点的偏移
+                const rect = node.getBoundingClientRect();
+                this.nodeOffsetX = e.clientX - rect.left;
+                this.nodeOffsetY = e.clientY - rect.top;
+
+                e.stopPropagation();
+            }
+
+            // 鼠标移动事件
+            onMouseMove(e) {
+                if (this.isDraggingCanvas) {
+                    this.canvasOffsetX = e.clientX - this.canvasStartX;
+                    this.canvasOffsetY = e.clientY - this.canvasStartY;
+                    this.updateViewport();
+                    this.updateViewportInfo();
+                } else if (this.isDraggingNode && this.activeNode) {
+                    this.updateNodePosition(e);
+                }
+            }
+
+            // 更新节点位置
+            updateNodePosition(e) {
+                // 计算新位置（考虑缩放和偏移）
+                const containerRect = this.canvasContainer.getBoundingClientRect();
+                const x = (e.clientX - containerRect.left - this.nodeOffsetX) / this.zoomLevel - this.canvasOffsetX;
+                const y = (e.clientY - containerRect.top - this.nodeOffsetY) / this.zoomLevel - this.canvasOffsetY;
+
+                // 更新节点位置
+                this.activeNode.style.left = x + 'px';
+                this.activeNode.style.top = y + 'px';
+
+                // 重新绘制连接线
+                this.drawConnections();
+            }
+
+            // 鼠标释放事件
+            onMouseUp() {
+                this.isDraggingCanvas = false;
+                this.isDraggingNode = false;
+                this.activeNode = null;
+            }
+
+            // 绘制所有连接线
+            drawConnections() {
+                if (!this.ctx || !this.canvas) return;
+
+                // 清空画布
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // 保存绘图状态
+                this.ctx.save();
+
+                // 应用变换
+                this.ctx.translate(this.canvasOffsetX, this.canvasOffsetY);
+                this.ctx.scale(this.zoomLevel, this.zoomLevel);
+
+                // 设置线条样式
+                this.ctx.strokeStyle = '#4285f4';
+                this.ctx.lineWidth = 2;
+
+                // 绘制每条连接
+                this.connections.forEach(conn => {
+                    this.drawSingleConnection(conn.parent, conn.child);
+                });
+
+                // 恢复绘图状态
+                this.ctx.restore();
+            }
+
+            // 绘制单条连接线
+            drawSingleConnection(parent, child) {
+                // 计算节点在容器内的实际位置
+                const parentX = parseFloat(parent.style.left) || 0;
+                const parentY = parseFloat(parent.style.top) || 0;
+                const childX = parseFloat(child.style.left) || 0;
+                const childY = parseFloat(child.style.top) || 0;
+
+                // 使用offsetWidth/offsetHeight获取实际尺寸
+                const parentWidth = parent.offsetWidth;
+                const parentHeight = parent.offsetHeight;
+                const childWidth = child.offsetWidth;
+                const childHeight = child.offsetHeight;
+
+                // 计算连接点
+                const parentRight = parentX + parentWidth;
+                const parentCenterY = parentY + parentHeight / 2;
+                const childLeft = childX;
+                const childCenterY = childY + childHeight / 2;
+
+                // 绘制贝塞尔曲线
+                this.ctx.beginPath();
+                this.ctx.moveTo(parentRight, parentCenterY);
+
+                // 计算控制点
+                const controlPointOffset = 50;
+                this.ctx.bezierCurveTo(
+                    parentRight + controlPointOffset, parentCenterY,
+                    childLeft - controlPointOffset, childCenterY,
+                    childLeft, childCenterY
+                );
+
+                this.ctx.stroke();
+
+                // 绘制箭头
+                this.drawArrow(childLeft, childCenterY, this.ctx);
+            }
+
+            // 绘制箭头
+            drawArrow(x, y, ctx) {
+                const arrowSize = 8;
+
+                // 计算箭头角度（简单实现，始终指向右侧）
+                const angle = Math.PI; // 指向左侧的箭头
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-arrowSize, -arrowSize / 2);
+                ctx.lineTo(-arrowSize, arrowSize / 2);
+                ctx.closePath();
+                ctx.fillStyle = '#4285f4';
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            // 更新视口信息
+            updateViewportInfo() {
+                if (!this.viewportInfo) return;
+
+                this.viewportInfo.textContent =
+                    `视口: X=${Math.round(-this.canvasOffsetX)}, Y=${Math.round(-this.canvasOffsetY)}, 缩放: ${Math.round(this.zoomLevel * 100)}%`;
+            }
+
+            // 缩放控制
+            zoomIn() {
+                this.zoomLevel = Math.min(this.zoomLevel + 0.1, 2.0);
+                this.updateViewport();
+                this.updateViewportInfo();
+                this.drawConnections();
+            }
+
+            zoomOut() {
+                this.zoomLevel = Math.max(this.zoomLevel - 0.1, 0.5);
+                this.updateViewport();
+                this.updateViewportInfo();
+                this.drawConnections();
+            }
+
+            resetView() {
+                this.canvasOffsetX = 0;
+                this.canvasOffsetY = 0;
+                this.zoomLevel = 1.0;
+                this.updateViewport();
+                this.updateViewportInfo();
+                this.drawConnections();
+            }
+
+            // 导出布局
+            exportLayout() {
+                const layout = this.nodes.map(node => {
+                    return {
+                        id: node.id,
+                        left: node.style.left,
+                        top: node.style.top,
+                        text: node.textContent
+                    };
+                });
+
+                const json = JSON.stringify(layout, null, 2);
+                const blob = new Blob([json], {
+                    type: 'application/json'
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'workflow-layout.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // 页面加载完成后初始化
+        let workflow;
+        window.addEventListener('load', () => {
+            workflow = new WorkflowEditor();
+        });
+    </script>
+</body>
+
+</html>

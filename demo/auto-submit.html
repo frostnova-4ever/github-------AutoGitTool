@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>自动提交 - 独立页面</title>
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="window-framework.css">
+    <link rel="stylesheet" href="file-manager.css">
+    <style>
+        body {
+            padding: 18px;
+        }
+        
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .note {
+            color: var(--muted);
+            font-size: 13px;
+        }
+        /* 添加取消样式的按钮样式 */
+        
+        .plain-link {
+            background: none;
+            border: none;
+            color: var(--link-color, #0066cc);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font: inherit;
+            display: inline;
+        }
+        
+        .plain-link:hover {
+            color: var(--link-hover-color, #004499);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>自动提交（独立页面）</h2>
+        <div class="top-actions">
+            <button id="auto-start-btn" class="control-btn">启动</button>
+            <button id="auto-stop-btn" class="control-btn" style="display:none;">停止</button>
+            <a href="index.html" class="plain-link">返回主界面</a>
+        </div>
+
+        <div id="node-info-box" class="node-info" style="border:1px solid var(--border-color); padding:12px; border-radius:6px; background:var(--white);">
+            <h3 style="margin-bottom:8px; font-size:15px;">节点信息</h3>
+            <div class="node-field"><strong>节点：</strong><span id="node-name">未连接</span></div>
+            <div class="node-field"><strong>状态：</strong><span id="node-status">空闲</span></div>
+            <div class="node-field"><strong>最后运行：</strong><span id="node-last">-</span></div>
+            <div class="node-field" style="margin-top:8px;"><strong>详细：</strong>
+                <pre id="node-details" style="white-space:pre-wrap; background:transparent; border:none; padding:0; margin:0;">无</pre>
+            </div>
+        </div>
+
+        <div style="margin-top:12px;">
+            <div class="note">提示：这是独立页面版本的自动提交界面。点击启动后会在页面内模拟任务运行。</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function setNodeInfo(info) {
+                const name = document.getElementById('node-name');
+                const status = document.getElementById('node-status');
+                const last = document.getElementById('node-last');
+                const details = document.getElementById('node-details');
+                if (name) name.textContent = info.name || '本地节点';
+                if (status) status.textContent = info.status || '空闲';
+                if (last) last.textContent = info.last || '-';
+                if (details) details.textContent = info.details || '-';
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const start = document.getElementById('auto-start-btn');
+                const stop = document.getElementById('auto-stop-btn');
+                if (!start || !stop) return;
+
+                start.addEventListener('click', function() {
+                    start.style.display = 'none';
+                    stop.style.display = '';
+                    setNodeInfo({
+                        name: '本地节点',
+                        status: '运行中',
+                        last: new Date().toLocaleString(),
+                        details: '自动任务已在独立页面启动。'
+                    });
+                });
+
+                stop.addEventListener('click', function() {
+                    stop.style.display = 'none';
+                    start.style.display = '';
+                    setNodeInfo({
+                        name: '本地节点',
+                        status: '已停止',
+                        last: new Date().toLocaleString(),
+                        details: '自动任务已停止。'
+                    });
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,674 @@
+/* 分支按钮样式 */
+
+.scm-branch-btn {
+    display: inline-flex;
+    align-items: center;
+    background: var(--light-bg, #222);
+    color: var(--primary-color, #4caf50);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 5px;
+    padding: 3px 12px 3px 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s;
+    margin-right: 10px;
+    outline: none;
+}
+
+.scm-branch-btn:hover,
+.scm-branch-btn:focus {
+    background: var(--primary-color, #4caf50);
+    color: #fff;
+    border-color: var(--primary-color, #4caf50);
+}
+
+.scm-branch-btn .branch-icon {
+    margin-right: 5px;
+    font-size: 15px;
+}
+
+.scm-branch-btn .branch-label {
+    margin-right: 3px;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* File Manager + SCM styles (clean, VS Code-like SCM panel + file list) */
+
+.file-manager {
+    max-width: 100%;
+    margin: 12px auto 20px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+
+/* 自动提交页面样式 */
+
+.auto-page .auto-controls .control-btn {
+    padding: 8px 14px;
+}
+
+.node-info {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.node-info .node-field {
+    margin: 6px 0;
+}
+
+.node-info pre {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+
+/* SCM panel (top of file list) */
+
+.scm-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, var(--panel-bg), #ffffff);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.scm-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.scm-branch {
+    color: var(--muted);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scm-branch .branch-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.scm-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.scm-commit-input {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    min-width: 220px;
+    max-width: 560px;
+    font-size: 13px;
+    background: linear-gradient(180deg, #fff, var(--panel-bg));
+}
+
+.scm-commit-input::placeholder {
+    color: var(--muted);
+}
+
+.scm-commit-input:focus {
+    outline: none;
+    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.08);
+    border-color: rgba(52, 152, 219, 0.9);
+}
+
+.scm-btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scm-btn:hover {
+    transform: translateY(-1px);
+}
+
+.scm-btn.primary {
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.12);
+}
+
+.scm-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+
+/* 自动提交并推送按钮样式 */
+
+.scm-btn.auto {
+    background: linear-gradient(180deg, #6c5ce7, #5a4bd6);
+    color: var(--white);
+    border: none;
+}
+
+.scm-btn.auto:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+}
+
+
+/* Responsive SCM: stack on small screens */
+
+@media (max-width: 740px) {
+    .scm-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .scm-actions {
+        justify-content: flex-end;
+    }
+    .scm-commit-input {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+
+/* File header */
+
+.file-header {
+    display: grid;
+    grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
+    padding: 8px 16px;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.file-header-item {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+}
+
+.file-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+
+/* File row (compact, VS Code-ish) */
+
+.file-item-detailed {
+    display: grid;
+    grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
+    padding: 8px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    transition: background-color 0.12s, transform 0.12s;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+}
+
+.file-item-detailed:hover {
+    background-color: rgba(52, 152, 219, 0.03);
+}
+
+.file-item-detailed:active {
+    transform: translateY(0);
+}
+
+.file-cell {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-icon-detailed {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 6px;
+}
+
+.file-name-detailed {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-family: 'Segoe UI Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.file-path {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.file-date,
+.file-type,
+.file-size {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.file-size {
+    text-align: right;
+}
+
+
+/* Change indicator: small colored strip before file name for added/modified/deleted */
+
+.change-indicator {
+    width: 6px;
+    height: 24px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
+.change-added {
+    background: #5ec07f;
+}
+
+.change-modified {
+    background: #e7c547;
+}
+
+.change-deleted {
+    background: #f14c4c;
+}
+
+
+/* Alternating row tint */
+
+.file-list .file-item-detailed:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+
+/* Scrollbar (subtle) */
+
+.file-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.file-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+}
+
+
+/* Small screens: simplify columns */
+
+@media (max-width: 768px) {
+    .file-header,
+    .file-item-detailed {
+        grid-template-columns: 28px 1fr 100px;
+    }
+    .file-header-item:nth-child(4),
+    .file-header-item:nth-child(5),
+    .file-cell:nth-child(4),
+    .file-cell:nth-child(5) {
+        display: none;
+    }
+}
+
+.file-manager {
+    max-width: 100%;
+    margin: 20px auto;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.file-header {
+    /* 源代码管理（SCM）面板样式，参考 VS Code */
+    .scm-panel {
+        padding: 10px 16px;
+        background: linear-gradient(180deg, var(--panel-bg), #ffffff);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .scm-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .scm-branch {
+        color: var(--muted);
+        font-size: 13px;
+    }
+    .branch-name {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+    .scm-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .scm-commit-input {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        min-width: 320px;
+        font-size: 13px;
+    }
+    .scm-commit-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.06);
+        border-color: rgba(52, 152, 219, 0.9);
+    }
+    .scm-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        background: #f3f3f3;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .scm-btn.primary {
+        background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+        color: var(--white);
+        border: none;
+    }
+    .scm-btn:active {
+        transform: translateY(1px);
+    }
+    /* 在文件列表上方显示 SCM 状态区域的间隔 */
+    .file-manager {
+        margin-top: 0;
+    }
+    display: grid;
+    grid-template-columns: 40px minmax(200px, 1fr) 120px 100px 80px;
+    padding: 12px 16px;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.file-header {
+    display: grid;
+    grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
+    padding: 8px 16px;
+    background-color: var(--light-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.file-header-item {
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+}
+
+.file-list {
+    max-height: 600px;
+    /* 文件行：更接近 VS Code 的 SCM 列表 */
+    .file-item-detailed {
+        display: grid;
+        grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
+        padding: 8px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        transition: background-color 0.12s, transform 0.12s;
+        cursor: pointer;
+        align-items: center;
+    }
+    overflow-y: auto;
+}
+
+.file-item-detailed {
+    display: grid;
+    .file-item-detailed:hover {
+        background-color: rgba(52, 152, 219, 0.03);
+    }
+    grid-template-columns: 40px minmax(200px, 1fr) 120px 100px 80px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.file-icon-detailed {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 6px;
+}
+
+.file-item-detailed {
+    background: linear-gradient(180deg, var(--white), var(--panel-bg));
+}
+
+.file-name-detailed {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-family: 'Segoe UI Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.file-item-detailed:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(20, 20, 20, 0.03);
+}
+
+.file-date,
+.file-type,
+.file-size {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.file-cell {
+    padding: 0 8px;
+    /* 变更类型指示（添加/修改/删除）样式 */
+    .change-indicator {
+        width: 6px;
+        height: 24px;
+        border-radius: 3px;
+        margin-right: 8px;
+    }
+    .change-added {
+        background: #5ec07f;
+    }
+    .change-modified {
+        background: #e7c547;
+    }
+    .change-deleted {
+        background: #f14c4c;
+    }
+    /* 文件路径下方显示相对路径（淡色） */
+    .file-path {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+    }
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-name-detailed {
+    word-break: break-all;
+}
+
+
+/* 行间隔与交替色 */
+
+.file-list .file-item-detailed:nth-child(odd) {
+    background-color: transparent;
+}
+
+.file-list .file-item-detailed:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+
+/* 点击时的反馈 */
+
+.file-item-detailed:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.file-icon-detailed {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.folder-icon-detailed {
+    color: var(--primary-color);
+}
+
+.file-icon-text-detailed {
+    color: var(--text-secondary);
+}
+
+.file-name-detailed {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.file-date,
+.file-type,
+.file-size {
+    color: var(--text-secondary);
+}
+
+.file-size {
+    text-align: right;
+}
+
+
+/* 文件类型颜色 */
+
+.file-type-image {
+    color: #4CAF50;
+}
+
+.file-type-video {
+    color: #F44336;
+}
+
+.file-type-audio {
+    color: #9C27B0;
+}
+
+.file-type-document {
+    color: #2196F3;
+}
+
+.file-type-archive {
+    color: #FF9800;
+}
+
+
+/* 响应式调整 */
+
+@media (max-width: 768px) {
+    .file-header,
+    .file-item-detailed {
+        grid-template-columns: 40px 1fr 100px;
+    }
+    .file-header-item:nth-child(4),
+    .file-header-item:nth-child(5),
+    .file-cell:nth-child(4),
+    .file-cell:nth-child(5) {
+        display: none;
+    }
+    .left-sidebar {
+        width: 150px;
+    }
+}
+
+
+/* 工作流组件专用样式 */
+
+.workflow-component {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border: 2px dashed var(--border-color);
+    background: #fafafa;
+    border-radius: 8px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.workflow-component .nodes-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.workflow-component .node {
+    position: absolute;
+    background: #4285f4;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: move;
+    min-width: 70px;
+    text-align: center;
+    z-index: 2;
+    pointer-events: auto;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.workflow-component .node:hover {
+    background: #3367d6;
+    transform: translateY(-1px);
+}
+
+.workflow-component .connector {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
