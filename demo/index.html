@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="window-framework.css">
     <link rel="stylesheet" href="default-theme.css">
     <link rel="stylesheet" href="file-manager.css">
-    <link rel="stylesheet" href="glass-effect.css">
+    <link rel="stylesheet" href="button.css">
+    <script src="liquid-glass.js"></script>
 </head>
 
 <body>
@@ -65,7 +66,7 @@
             <div id="page-filemanager" class="left-page">
                 <div class="scm-panel">
                     <div class="scm-header">
-                        <button class="scm-branch-btn"><span class="branch-icon">🌿</span> <span class="branch-label">分支:</span> <span class="branch-name">main</span></button>
+                        <button class="scm-branch-btn btn-mr-8"><span class="branch-icon">🌿</span> <span class="branch-label">分支:</span> <span class="branch-name">main</span></button>
                         <!-- 在提交信息输入框下方添加按钮组 -->
                         <div class="scm-actions">
                             <input id="commit-input" class="scm-commit-input" placeholder="填写提交信息（例如: 修复样式）">
@@ -80,6 +81,9 @@
                                     <button id="auto-btn" class="scm-dropdown-item auto" data-action="auto">提交并推送</button>
                                 </div>
                             </div>
+                            <button id="git-init-btn" class="scm-btn secondary" style="display: none; margin-left: 8px;">
+                                初始化Git
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -146,7 +150,7 @@
                 </div>
                 <div class="control-row">
                     <input type="text" id="github-input" class="url-input" placeholder="填入 GitHub 仓库 URL，例如 https://github.com/user/repo">
-                    <button class="control-btn" id="github-btn">导入 GitHub</button>
+                    <button class="control-btn github" id="github-btn">导入 GitHub</button>
                 </div>
             </div>
 

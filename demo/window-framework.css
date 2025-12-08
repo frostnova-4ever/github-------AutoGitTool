@@ -22,27 +22,6 @@ body {
     gap: 8px;
 }
 
-.window-btn {
-    width: 46px;
-    height: 38px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    background-color: transparent;
-    border: none;
-    color: var(--white);
-}
-
-.window-btn:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.close-btn:hover {
-    background-color: var(--danger-color);
-}
-
 .content {
     flex: 1;
     display: flex;
@@ -120,21 +99,6 @@ body {
     align-items: center;
 }
 
-.control-btn {
-    padding: 8px 16px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
-.control-btn:hover {
-    background-color: #2980b9;
-}
-
 .url-input {
     flex: 1;
     padding: 8px;
@@ -174,15 +138,6 @@ body {
     outline: none;
     border-color: rgba(52, 152, 219, 0.9);
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
-}
-
-
-/* 列出按钮更醒目 */
-
-#list-btn {
-    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
-    border-radius: 6px;
-    padding: 8px 14px;
 }
 
 
@@ -284,7 +239,7 @@ body {
 }
 
 
-/* GitHub 输入样式与按钮：与路径输入风格一致 */
+/* GitHub 输入样式：与路径输入风格一致 */
 
 #github-input {
     flex: 1;
@@ -300,18 +255,8 @@ body {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.05);
 }
 
-#github-btn {
-    padding: 8px 14px;
-    border-radius: 6px;
-    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
-    color: var(--white);
-    border: none;
-    cursor: pointer;
-}
 
-#github-btn:hover {
-    filter: brightness(0.95);
-}
+/* GitHub按钮样式已合并到button.css */
 
 
 /* 菜单样式 */

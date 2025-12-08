@@ -1,0 +1,222 @@
+/* button.css - 统一按钮样式 */
+
+.control-btn {
+    padding: 8px 16px;
+    margin-right: 8px;
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+
+/* GitHub按钮变体 */
+
+.control-btn.github {
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: filter 0.2s;
+}
+
+.control-btn.github:hover {
+    filter: brightness(0.95);
+}
+
+
+/* List按钮变体 - 合并了#list-btn的样式 */
+
+.control-btn.list {
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.control-btn:hover {
+    background-color: #2980b9;
+}
+
+.control-btn.primary {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* 特殊控制按钮 */
+
+
+/* #list-btn样式已合并到.control-btn.list变体中 */
+
+
+/* 窗口控制按钮 */
+
+.window-btn {
+    width: 46px;
+    height: 38px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    background-color: transparent;
+    border: none;
+    color: var(--white);
+}
+
+.window-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-btn:hover {
+    background-color: var(--danger-color);
+}
+
+
+/* SCM分支按钮 */
+
+.scm-branch-btn {
+    display: inline-flex;
+    align-items: center;
+    background: var(--light-bg, #222);
+    color: var(--primary-color, #4caf50);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 5px;
+    padding: 3px 12px 3px 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s;
+    outline: none;
+}
+
+.scm-branch-btn:hover,
+.scm-branch-btn:focus {
+    background: var(--primary-color, #4caf50);
+    color: #fff;
+    border-color: var(--primary-color, #4caf50);
+}
+
+.scm-branch-btn .branch-icon {
+    margin-right: 5px;
+    font-size: 15px;
+}
+
+.scm-branch-btn .branch-label {
+    margin-right: 3px;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* SCM操作按钮 */
+
+.scm-btn {
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #fafafa;
+    cursor: pointer;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.scm-btn:hover {
+    transform: translateY(-1px);
+}
+
+.scm-btn.primary {
+    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.12);
+}
+
+.scm-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.scm-btn.secondary {
+    background: linear-gradient(180deg, #f8f9fa, #e9ecef);
+    color: #333;
+    border-color: #dee2e6;
+}
+
+
+/* 自动提交并推送按钮 */
+
+.scm-btn.auto {
+    background: linear-gradient(180deg, #6c5ce7, #5a4bd6);
+    color: var(--white);
+    border: none;
+}
+
+.scm-btn.auto:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+}
+
+
+/* 下拉菜单项 */
+
+.scm-dropdown-item {
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    color: var(--text-primary);
+    border-radius: 0;
+    transition: background-color 0.12s;
+}
+
+.scm-dropdown-item:hover {
+    background-color: rgba(52, 152, 219, 0.08);
+}
+
+.scm-dropdown-item.auto {
+    color: #6c5ce7;
+    font-weight: 500;
+}
+
+
+/* 纯文本链接按钮 */
+
+.plain-link {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    transition: color 0.2s, text-decoration 0.2s;
+}
+
+.plain-link:hover {
+    color: var(--link-hover-color, #004499);
+    text-decoration: none;
+}
+
+
+/* 工具栏按钮（工作流页面） */
+
+#toolbar button {
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 14px;
+}
+
+#toolbar button:hover {
+    background-color: #2980b9;
+}

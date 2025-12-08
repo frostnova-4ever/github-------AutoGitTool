@@ -197,6 +197,9 @@ function setupUI() {
         // 初始化按钮和菜单
         updateButtonAndMenu();
 
+        // 检查Git仓库状态并显示/隐藏初始化按钮
+        checkGitRepositoryStatus();
+
         // 主按钮点击事件：切换菜单显示/隐藏
         mainBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -283,9 +286,50 @@ function setupUI() {
             });
         });
     }
+
+    // Git初始化按钮点击事件
+    const gitInitBtn = document.getElementById('git-init-btn');
+    if (gitInitBtn) {
+        gitInitBtn.addEventListener('click', function() {
+            if (window.pywebview && window.pywebview.api) {
+                window.pywebview.api.execute_command('git init', currentWorkingDirectory)
+                    .then(response => {
+                        if (response.output) {
+                            appendTerminal(response.output, 'info');
+                        }
+                        if (response.error) {
+                            appendTerminal(response.error, 'error');
+                        } else {
+                            appendTerminal('Git仓库初始化成功', 'success');
+                            // 重新检查Git仓库状态，隐藏初始化按钮
+                            checkGitRepositoryStatus();
+                        }
+                    })
+                    .catch(error => {
+                        appendTerminal(`执行git init命令失败: ${error}`, 'error');
+                    });
+            }
+        });
+    }
 }
 
 
+
+// 检查Git仓库状态
+function checkGitRepositoryStatus() {
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.is_git_repository(currentWorkingDirectory)
+            .then(isGit => {
+                const initBtn = document.getElementById('git-init-btn');
+                if (initBtn) {
+                    initBtn.style.display = isGit ? 'none' : 'inline-block';
+                }
+            })
+            .catch(error => {
+                console.error('检查Git仓库状态失败:', error);
+            });
+    }
+}
 
 // 设置额外的事件监听器
 function setupAdditionalEventListeners() {
@@ -301,6 +345,12 @@ function setupAdditionalEventListeners() {
     }
 
     // 测试按钮已移除，不再需要此事件监听器
+}
+
+// 全局目录切换事件处理函数
+window.onDirectoryChanged = function(newPath) {
+    // 重新检查Git仓库状态
+    checkGitRepositoryStatus();
 }
 
 // 在DOM加载完成后执行

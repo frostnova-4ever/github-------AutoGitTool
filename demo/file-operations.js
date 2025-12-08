@@ -10,6 +10,15 @@ const fileIcons = {
 // 当前工作目录
 let currentWorkingDirectory = 'C:\\Users\\Documents';
 
+// 目录切换事件监听器
+function onDirectoryChanged(newPath) {
+    currentWorkingDirectory = newPath;
+    // 通知其他模块目录已改变
+    if (window.onDirectoryChanged) {
+        window.onDirectoryChanged(newPath);
+    }
+}
+
 // 向终端添加消息
 function appendTerminal(msg, level = 'info') {
     const terminalContent = document.getElementById('terminal-content');
@@ -65,8 +74,8 @@ function executeCommand(command) {
                     appendTerminal(response.error, 'error');
                 }
                 // 更新当前工作目录
-                if (response.cwd) {
-                    currentWorkingDirectory = response.cwd;
+                if (response.cwd && response.cwd !== currentWorkingDirectory) {
+                    onDirectoryChanged(response.cwd);
                 }
             })
             .catch(error => {
@@ -330,9 +339,10 @@ function loadFileList(path) {
 
 // 渲染文件列表
 function renderFileList() {
-    const list = document.querySelector('.file-list');
-    if (!list) return;
-    list.innerHTML = '';
+    const fileList = document.querySelector('.file-list');
+    if (!fileList) return;
+
+    fileList.innerHTML = '';
     fileData.forEach(f => {
         const row = document.createElement('div');
         row.className = 'file-item-detailed';
@@ -341,6 +351,6 @@ function renderFileList() {
             <div class="file-cell file-name">${f.name || ''}</div>
         `;
         row.addEventListener('click', () => appendTerminal(`点击: ${f.name}`));
-        list.appendChild(row);
+        fileList.appendChild(row);
     });
 }

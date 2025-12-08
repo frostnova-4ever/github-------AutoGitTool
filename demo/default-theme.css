@@ -75,45 +75,6 @@
 }
 
 
-/* 按钮美化 */
-
-.control-btn {
-    padding: 8px 16px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 10px;
-    font-size: 14px;
-}
-
-.control-btn:hover {
-    background-color: #2980b9;
-}
-
-#list-btn {
-    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
-    border-radius: 6px;
-    padding: 8px 14px;
-}
-
-#github-btn {
-    padding: 8px 16px;
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-right: 0;
-    font-size: 14px;
-}
-
-#github-btn:hover {
-    filter: brightness(0.95);
-}
-
-
 /* 菜单美化 */
 
 .menu-list {

@@ -270,6 +270,24 @@ class Api:
             print(f"打开文件夹对话框失败: {str(e)}")
             return None
     
+    def is_git_repository(self, path):
+        """
+        API方法：检查指定路径是否是Git仓库（是否包含.git目录）
+        
+        Args:
+            path (str): 要检查的目录路径
+            
+        Returns:
+            bool: 如果是Git仓库返回True，否则返回False
+        """
+        if not os.path.exists(path):
+            return False
+        if not os.path.isdir(path):
+            return False
+        
+        git_dir = os.path.join(path, '.git')
+        return os.path.exists(git_dir) and os.path.isdir(git_dir)
+    
     def execute_command(self, command, cwd=None):
         """
         API方法：执行系统命令

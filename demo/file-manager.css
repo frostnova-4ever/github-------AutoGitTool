@@ -1,40 +1,3 @@
-/* 分支按钮样式 */
-
-.scm-branch-btn {
-    display: inline-flex;
-    align-items: center;
-    background: var(--light-bg, #222);
-    color: var(--primary-color, #4caf50);
-    border: 1px solid var(--border-color, #444);
-    border-radius: 5px;
-    padding: 3px 12px 3px 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, border 0.2s;
-    margin-right: 10px;
-    outline: none;
-}
-
-.scm-branch-btn:hover,
-.scm-branch-btn:focus {
-    background: var(--primary-color, #4caf50);
-    color: #fff;
-    border-color: var(--primary-color, #4caf50);
-}
-
-.scm-branch-btn .branch-icon {
-    margin-right: 5px;
-    font-size: 15px;
-}
-
-.scm-branch-btn .branch-label {
-    margin-right: 3px;
-    color: #888;
-    font-size: 13px;
-}
-
-
 /* File Manager + SCM styles */
 
 .file-manager {
@@ -42,7 +5,6 @@
     max-width: 100%;
     flex: 1;
     margin: 8px 0;
-    background: var(--white);
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     overflow: hidden;
@@ -50,6 +12,11 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    /* 应用玻璃效果 */
+    background: rgba(240, 240, 240, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(200, 200, 200, 0.3);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 
@@ -136,113 +103,6 @@
     border-color: rgba(52, 152, 219, 0.9);
 }
 
-.scm-btn {
-    padding: 7px 14px;
-    border-radius: 6px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    background: #fafafa;
-    cursor: pointer;
-    font-size: 13px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.scm-btn:hover {
-    transform: translateY(-1px);
-}
-
-.scm-btn.primary {
-    background: linear-gradient(180deg, var(--primary-color), #2a88c6);
-    color: var(--white);
-    border: none;
-    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.12);
-}
-
-.scm-btn:disabled {
-    opacity: 0.6;
-    cursor: default;
-}
-
-
-/* 自动提交并推送按钮样式 */
-
-.scm-btn.auto {
-    background: linear-gradient(180deg, #6c5ce7, #5a4bd6);
-    color: var(--white);
-    border: none;
-}
-
-.scm-btn.auto:hover {
-    filter: brightness(1.03);
-    transform: translateY(-1px);
-}
-
-
-/* VS Code风格的下拉按钮 */
-
-.scm-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.scm-main-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-}
-
-.scm-dropdown-arrow {
-    font-size: 10px;
-    margin-left: 4px;
-    transition: transform 0.15s ease;
-}
-
-.scm-dropdown:hover .scm-dropdown-arrow {
-    transform: translateY(1px);
-}
-
-.scm-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 140px;
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    margin-top: 4px;
-    display: none;
-}
-
-.scm-dropdown-menu.show {
-    display: block;
-}
-
-.scm-dropdown-item {
-    width: 100%;
-    padding: 8px 16px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    text-align: left;
-    font-size: 13px;
-    color: var(--text-primary);
-    border-radius: 0;
-    transition: background-color 0.12s;
-}
-
-.scm-dropdown-item:hover {
-    background-color: rgba(52, 152, 219, 0.08);
-}
-
-.scm-dropdown-item.auto {
-    color: #6c5ce7;
-    font-weight: 500;
-}
-
 
 /* File header */
 
@@ -250,14 +110,16 @@
     display: grid;
     grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
     padding: 8px 16px;
-    background-color: var(--light-bg);
-    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     font-weight: 600;
     color: var(--text-secondary);
     font-size: 13px;
     border-radius: 4px 4px 0 0;
     width: 100%;
     box-sizing: border-box;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .file-header-item {
@@ -271,10 +133,13 @@
     max-height: none;
     overflow-y: auto;
     border-radius: 0 0 4px 4px;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-top: none;
     width: 100%;
     box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 
@@ -284,18 +149,18 @@
     display: grid;
     grid-template-columns: 28px minmax(180px, 1fr) 120px 100px 80px;
     padding: 8px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    background: linear-gradient(180deg, var(--white), var(--panel-bg));
-    transition: background-color 0.12s, transform 0.12s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.12s ease;
     cursor: pointer;
     align-items: center;
     gap: 8px;
 }
 
 .file-item-detailed:hover {
-    background-color: var(--hover-bg);
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(20, 20, 20, 0.03);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .file-item-detailed:active {
@@ -512,6 +377,11 @@
 
 @media (max-width: 768px) {
     .scm-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .scm-header {
         flex-direction: column;
         align-items: stretch;
         gap: 8px;
