@@ -75,6 +75,13 @@
                     </div>
 
                     <div class="file-manager compact">
+                        <div style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="filemanager-path-input" placeholder="输入路径（例如：/或C:\\）" style="flex: 1; padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 14px;">
+                                <button id="filemanager-list-btn" class="control-btn primary" style="padding: 8px 16px;">列出</button>
+                                <button id="test-list-paths-btn" style="padding: 8px 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">测试路径列表</button>
+                            </div>
+                        </div>
                         <div class="file-header">
                             <div class="file-header-item file-size">大小</div>
                             <div class="file-header-item file-name">名称</div>
@@ -128,13 +135,22 @@
         <div class="right-panel">
             <div class="top-controls" style="padding:16px;">
                 <div class="control-row" style="margin-bottom:8px;">
-                    <input type="text" id="path-input" class="url-input" placeholder="在此输入 Windows 路径，例如 C:\\Users\\Public">
-                    <button class="control-btn" id="list-btn">列出路径</button>
+                    <input type="text" id="right-panel-path-input" class="url-input" placeholder="在此输入 Windows 路径，例如 C:\Users\Public">
+                    <button class="control-btn" id="right-panel-list-btn">列出路径</button>
                 </div>
                 <div class="control-row">
                     <input type="text" id="github-input" class="url-input" placeholder="填入 GitHub 仓库 URL，例如 https://github.com/user/repo">
                     <button class="control-btn" id="github-btn">导入 GitHub</button>
                 </div>
+            </div>
+
+            <!-- 右侧面板文件列表 -->
+            <div class="right-file-list-container" style="padding: 10px; border-bottom: 1px solid var(--border-color); max-height: 300px; overflow-y: auto;">
+                <div class="file-header" style="display: flex; font-weight: bold; padding: 5px 0; border-bottom: 1px solid var(--border-color);">
+                    <div class="file-header-item" style="flex: 1;">名称</div>
+                    <div class="file-header-item" style="width: 120px;">大小</div>
+                </div>
+                <div id="right-file-list" class="file-list" style="margin-top: 5px;"></div>
             </div>
 
             <div class="fixed-container">
@@ -154,69 +170,7 @@
         </div>
     </div>
 
-    <script>
-        // 工作流编辑器相关代码已移除，现在通过iframe引入workflow-new.html
-
-        // 页面切换功能
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuItems = document.querySelectorAll('.menu-item');
-            const pages = document.querySelectorAll('.left-page');
-
-
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // 移除所有active类
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    // 隐藏所有页面
-                    pages.forEach(page => page.style.display = 'none');
-
-                    // 设置当前active
-                    this.classList.add('active');
-                    const target = this.getAttribute('data-target');
-                    document.getElementById(target).style.display = 'block';
-                });
-            });
-
-            // 自动提交页面交互
-            function setNodeInfo(info) {
-                const name = document.getElementById('node-name');
-                const status = document.getElementById('node-status');
-                const last = document.getElementById('node-last');
-                const details = document.getElementById('node-details');
-                if (name) name.textContent = info.name || '本地节点';
-                if (status) status.textContent = info.status || '空闲';
-                if (last) last.textContent = info.last || '-';
-                if (details) details.textContent = info.details || '-';
-            }
-
-            // 工作流编辑器已在工具栏中通过onclick事件绑定
-
-            const start = document.getElementById('auto-start-btn');
-            const stop = document.getElementById('auto-stop-btn');
-            if (start && stop) {
-                start.addEventListener('click', function() {
-                    start.style.display = 'none';
-                    stop.style.display = '';
-                    setNodeInfo({
-                        name: '本地节点',
-                        status: '运行中',
-                        last: new Date().toLocaleString(),
-                        details: '自动任务已启动（主界面）。'
-                    });
-                });
-                stop.addEventListener('click', function() {
-                    stop.style.display = 'none';
-                    start.style.display = '';
-                    setNodeInfo({
-                        name: '本地节点',
-                        status: '已停止',
-                        last: new Date().toLocaleString(),
-                        details: '自动任务已停止（主界面）。'
-                    });
-                });
-            }
-        });
-    </script>
+    <script src="appfunc.js"></script>
 </body>
 
 </html>

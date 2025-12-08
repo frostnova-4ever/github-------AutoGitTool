@@ -4,6 +4,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+# 全局窗口变量
+global_window = None
+
 def get_directory_contents(path):
     """
     获取指定路径下的所有文件和文件夹信息
@@ -119,6 +122,7 @@ class Api:
             "path": path,
             "contents": contents
         }
+    
     def read(self,file_path):
         try:
             # 检查文件是否存在
@@ -137,28 +141,167 @@ class Api:
         except Exception as e:
             return  f"读取文件失败: {str(e)}"
 
+    def list_paths(self):
+        """
+        API方法：列出系统中的常用路径
+        
+        Returns:
+            dict: 包含常用路径的列表
+        """
+        paths = []
+        
+        try:
+            # 添加当前目录
+            current_dir = os.getcwd()
+            paths.append({"name": "当前目录", "path": current_dir, "type": "directory"})
+            
+            # 添加用户主目录
+            home_dir = os.path.expanduser("~")
+            paths.append({"name": "用户主目录", "path": home_dir, "type": "directory"})
+            
+            # 使用pywin32获取Windows特殊文件夹路径
+            if os.name == 'nt':
+                try:
+                    import win32com.shell
+                    from win32com.shell import shell, shellcon
+                    
+                    # 获取桌面目录
+                    desktop_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, None, 0)
+                    if os.path.exists(desktop_dir):
+                        paths.append({"name": "桌面", "path": desktop_dir, "type": "directory"})
+                    
+                    # 获取文档目录
+                    docs_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_PERSONAL, None, 0)
+                    if os.path.exists(docs_dir):
+                        paths.append({"name": "文档", "path": docs_dir, "type": "directory"})
+                    
+                    # 获取下载目录
+                    downloads_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_DOWNLOADS, None, 0)
+                    if os.path.exists(downloads_dir):
+                        paths.append({"name": "下载", "path": downloads_dir, "type": "directory"})
+                    
+                    # 获取音乐目录
+                    music_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_MYMUSIC, None, 0)
+                    if os.path.exists(music_dir):
+                        paths.append({"name": "音乐", "path": music_dir, "type": "directory"})
+                    
+                    # 获取图片目录
+                    pictures_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_MYPICTURES, None, 0)
+                    if os.path.exists(pictures_dir):
+                        paths.append({"name": "图片", "path": pictures_dir, "type": "directory"})
+                    
+                    # 获取视频目录
+                    videos_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_MYVIDEO, None, 0)
+                    if os.path.exists(videos_dir):
+                        paths.append({"name": "视频", "path": videos_dir, "type": "directory"})
+                    
+                    # 获取程序目录
+                    programs_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAMS, None, 0)
+                    if os.path.exists(programs_dir):
+                        paths.append({"name": "程序", "path": programs_dir, "type": "directory"})
+                    
+                    # 获取系统目录
+                    system_dir = shell.SHGetFolderPath(0, shellcon.CSIDL_SYSTEM, None, 0)
+                    if os.path.exists(system_dir):
+                        paths.append({"name": "系统", "path": system_dir, "type": "directory"})
+                    
+                except Exception as e:
+                    # 如果pywin32调用失败，回退到传统方法
+                    print(f"pywin32调用失败: {str(e)}")
+                    # 使用传统方法获取桌面目录
+                    desktop_dir = os.path.join(home_dir, "Desktop")
+                    if os.path.exists(desktop_dir):
+                        paths.append({"name": "桌面", "path": desktop_dir, "type": "directory"})
+                    
+                    # 使用传统方法获取文档目录
+                    docs_dir = os.path.join(home_dir, "Documents")
+                    if os.path.exists(docs_dir):
+                        paths.append({"name": "文档", "path": docs_dir, "type": "directory"})
+                    
+                    # 使用传统方法获取下载目录
+                    downloads_dir = os.path.join(home_dir, "Downloads")
+                    if os.path.exists(downloads_dir):
+                        paths.append({"name": "下载", "path": downloads_dir, "type": "directory"})
+            
+            # 添加本地磁盘根目录（Windows系统）
+            if os.name == 'nt':
+                # 使用pywin32获取磁盘驱动器
+                try:
+                    import win32api
+                    drives = win32api.GetLogicalDriveStrings()
+                    drives = drives.split('\\')[:-1]
+                    for drive in drives:
+                        if os.path.exists(drive):
+                            paths.append({"name": f"磁盘 {drive}", "path": drive, "type": "drive"})
+                except Exception as e:
+                    # 如果pywin32调用失败，回退到传统方法
+                    print(f"获取磁盘驱动器失败: {str(e)}")
+                    import string
+                    for letter in string.ascii_uppercase:
+                        drive = letter + ":\\"
+                        if os.path.exists(drive):
+                            paths.append({"name": f"磁盘 {drive}", "path": drive, "type": "drive"})
+            
+            return {"paths": paths}
+            
+        except Exception as e:
+            return {"error": f"获取路径列表失败: {str(e)}", "paths": paths}
+    
+    def open_folder_dialog(self):
+        """
+        API方法：打开文件夹选择对话框
+        
+        Returns:
+            str: 选中的文件夹路径，如果用户取消则返回None
+        """
+        global global_window
+        try:
+            if global_window:
+                # 使用新的FileDialog.FOLDER方式
+                result = global_window.create_file_dialog(
+                    dialog_type=webview.FileDialog.FOLDER,
+                    allow_multiple=False
+                )
+                
+                if result and len(result) > 0:
+                    return result[0]
+            return None
+        except Exception as e:
+            print(f"打开文件夹对话框失败: {str(e)}")
+            return None
+
+def on_window_loaded():
+    """
+    窗口加载完成后的回调函数
+    """
+    global global_window
+    print("窗口已加载完成")
+
 if __name__ == '__main__':
-    # 创建API实例
-    api = Api()
+    try:
+        # 创建API实例
+        api = Api()
 
-    # 使用pathlib处理路径
-    current_script = Path(__file__).resolve()
-    html_path = current_script.parent.parent / "demo" / "index.html"
+        # 使用pathlib处理路径
+        current_script = Path(__file__).resolve()
+        html_path = current_script.parent.parent / "demo" / "index.html"
 
-    # 检查文件是否存在
-    if not html_path.exists():
-        print(f"HTML文件不存在: {html_path}")
-        exit(1)
+        # 检查文件是否存在
+        if not html_path.exists():
+            print(f"HTML文件不存在: {html_path}")
+            exit(1)
 
-    # 直接使用文件路径而不是读取内容
-    window = webview.create_window(
-        '文件浏览器',
-        url="../demo/index.html",
-        js_api=api,
-        width=1000,
-        height=700,
-        resizable=True
-    )
+        # 直接使用文件路径而不是读取内容
+        global_window = webview.create_window(
+            '文件浏览器',
+            url="../demo/index.html",
+            js_api=api,
+            width=1000,
+            height=700,
+            resizable=True
+        )
 
-    # 启动应用
-    webview.start(debug=True)
+        # 启动应用
+        webview.start(on_window_loaded, debug=True)
+    except Exception as e:
+        print(f"启动应用失败: {str(e)}")
