@@ -12,9 +12,6 @@
     transition: background-color 0.2s;
 }
 
-
-/* GitHub按钮变体 */
-
 .control-btn.github {
     padding: 8px 14px;
     border-radius: 6px;
@@ -40,12 +37,6 @@
 .control-btn.primary {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-
-/* 特殊控制按钮 */
-
-
-/* #list-btn样式已合并到.control-btn.list变体中 */
 
 
 /* 窗口控制按钮 */
@@ -111,27 +102,31 @@
 /* SCM操作按钮 */
 
 .scm-btn {
-    padding: 7px 14px;
-    border-radius: 6px;
+    padding: 5px 12px;
+    border-radius: 4px;
     border: 1px solid rgba(0, 0, 0, 0.06);
     background: #fafafa;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    transition: transform 0.2s, background 0.2s;
+    gap: 6px;
+    min-width: 100px;
+    /* 减小最小宽度，使按钮更紧凑 */
+    transition: background 0.1s;
+    /* 减少平滑效果，仅保留背景色变化 */
 }
 
 .scm-btn:hover {
-    transform: translateY(-1px);
+    /* 移除上移效果，减少平滑感 */
 }
 
 .scm-btn.primary {
     background: linear-gradient(180deg, var(--primary-color), #2a88c6);
     color: var(--white);
     border: none;
-    box-shadow: 0 6px 18px rgba(52, 152, 219, 0.12);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.12);
+    /* 减少阴影效果 */
 }
 
 .scm-btn:disabled {
@@ -145,6 +140,10 @@
     border-color: #dee2e6;
 }
 
+.scm-btn.secondary .scm-dropdown-arrow {
+    border-left-color: rgba(0, 0, 0, 0.1);
+}
+
 
 /* 自动提交并推送按钮 */
 
@@ -154,9 +153,55 @@
     border: none;
 }
 
+.scm-btn.auto .scm-dropdown-arrow {
+    border-left-color: rgba(255, 255, 255, 0.3);
+}
+
 .scm-btn.auto:hover {
-    filter: brightness(1.03);
-    transform: translateY(-1px);
+    /* 移除所有平滑过渡效果 */
+}
+
+
+/* 下拉箭头样式 */
+
+.scm-dropdown-arrow {
+    cursor: pointer;
+    padding: 0 8px;
+    margin-left: 8px;
+    user-select: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+
+/* 下拉菜单容器 */
+
+.scm-dropdown {
+    position: relative;
+}
+
+.scm-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    margin-top: 4px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    min-width: 120px;
+    overflow: hidden;
+}
+
+
+/* 显示下拉菜单 */
+
+.scm-dropdown-menu.show {
+    display: block;
 }
 
 
@@ -172,7 +217,6 @@
     font-size: 13px;
     color: var(--text-primary);
     border-radius: 0;
-    transition: background-color 0.12s;
 }
 
 .scm-dropdown-item:hover {

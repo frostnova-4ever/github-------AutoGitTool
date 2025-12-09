@@ -121,6 +121,12 @@ function setupUI() {
         loadCommonPaths();
     }
 
+    // GitHub导入按钮事件监听器
+    const githubBtn = document.getElementById('github-btn');
+    if (githubBtn) {
+        githubBtn.addEventListener('click', handleGitHubImport);
+    }
+
     document.querySelectorAll('.menu-item').forEach(mi => mi.addEventListener('click', ev => {
         ev.preventDefault();
         ev.stopPropagation();
@@ -156,6 +162,8 @@ function setupUI() {
     // 下拉菜单交互功能
     const scmDropdown = document.querySelector('.scm-dropdown');
     const mainBtn = document.getElementById('scm-main-btn');
+    const btnText = mainBtn.querySelector('.scm-btn-text');
+    const dropdownArrow = document.getElementById('scm-dropdown-arrow');
     const dropdownMenu = document.getElementById('scm-dropdown-menu');
     const dropdownItems = document.querySelectorAll('.scm-dropdown-item');
 
@@ -170,7 +178,7 @@ function setupUI() {
     // 更新按钮显示和下拉菜单
     function updateButtonAndMenu() {
         // 更新按钮文字
-        mainBtn.innerHTML = `${actionNames[currentAction]}<span class="scm-dropdown-arrow">▼</span>`;
+        btnText.textContent = actionNames[currentAction];
 
         // 更新下拉菜单项
         dropdownItems.forEach(item => {
@@ -193,16 +201,53 @@ function setupUI() {
         });
     }
 
-    if (scmDropdown && mainBtn && dropdownMenu) {
+    if (scmDropdown && mainBtn && dropdownMenu && btnText && dropdownArrow) {
         // 初始化按钮和菜单
         updateButtonAndMenu();
 
         // 检查Git仓库状态并显示/隐藏初始化按钮
         checkGitRepositoryStatus();
 
-        // 主按钮点击事件：切换菜单显示/隐藏
+        // 主按钮点击事件：执行当前操作
         mainBtn.addEventListener('click', (e) => {
+            // 如果点击的是下拉箭头，则不执行操作
+            if (e.target === dropdownArrow || dropdownArrow.contains(e.target)) {
+                return;
+            }
             e.stopPropagation();
+
+            // 模拟执行当前操作
+            if (currentAction === 'commit' && commitInput) {
+                const m = commitInput.value.trim();
+                if (!m) { appendTerminal('请输入提交信息', 'error'); return; }
+                appendTerminal(`提交: ${m}`);
+                setTimeout(() => appendTerminal('已提交', 'success'), 800);
+                commitInput.value = '';
+            } else if (currentAction === 'push') {
+                appendTerminal('推送中...');
+                setTimeout(() => appendTerminal('推送完成', 'success'), 1000);
+            } else if (currentAction === 'auto' && commitInput) {
+                commitInput.value = commitInput.value || '自动提交';
+
+                // 模拟提交
+                const m = commitInput.value.trim();
+                appendTerminal(`提交: ${m}`);
+                setTimeout(() => {
+                    appendTerminal('已提交', 'success');
+
+                    // 延迟后模拟推送
+                    appendTerminal('推送中...');
+                    setTimeout(() => appendTerminal('推送完成', 'success'), 1000);
+                }, 800);
+
+                commitInput.value = '';
+            }
+        });
+
+        // 下拉箭头点击事件：切换菜单显示/隐藏
+        dropdownArrow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
             dropdownMenu.classList.toggle('show');
         });
 
@@ -212,38 +257,11 @@ function setupUI() {
                 e.stopPropagation();
                 const action = item.getAttribute('data-action');
 
-                // 更新当前按钮功能（无论操作是否成功都会切换）
+                // 更新当前按钮功能
                 currentAction = action;
 
                 // 更新按钮显示和菜单
                 updateButtonAndMenu();
-
-                // 执行对应操作
-                if (action === 'commit' && commitInput) {
-                    const m = commitInput.value.trim();
-                    if (!m) { appendTerminal('请输入提交信息', 'error'); return; }
-                    appendTerminal(`提交: ${m}`);
-                    setTimeout(() => appendTerminal('已提交', 'success'), 800);
-                    commitInput.value = '';
-                } else if (action === 'push') {
-                    appendTerminal('推送中...');
-                    setTimeout(() => appendTerminal('推送完成', 'success'), 1000);
-                } else if (action === 'auto' && commitInput) {
-                    commitInput.value = commitInput.value || '自动提交';
-
-                    // 模拟提交
-                    const m = commitInput.value.trim();
-                    appendTerminal(`提交: ${m}`);
-                    setTimeout(() => {
-                        appendTerminal('已提交', 'success');
-
-                        // 延迟后模拟推送
-                        appendTerminal('推送中...');
-                        setTimeout(() => appendTerminal('推送完成', 'success'), 1000);
-                    }, 800);
-
-                    commitInput.value = '';
-                }
 
                 // 关闭菜单
                 dropdownMenu.classList.remove('show');
@@ -311,9 +329,189 @@ function setupUI() {
             }
         });
     }
+
+    // 监听GitHub输入框变化，用于动态更新按钮文字
+    setupGitHubButtonTextUpdater();
+
+    // GitHub API功能按钮事件
+
 }
 
 
+
+// 监听GitHub输入框变化，动态更新按钮文字
+function setupGitHubButtonTextUpdater() {
+    const githubInput = document.getElementById('github-input');
+    const githubBtn = document.getElementById('github-btn');
+
+    // 保存当前输入值和连接状态
+    let currentInputValue = githubInput.value;
+    let isConnected = false;
+
+    // 监听输入框变化
+    githubInput.addEventListener('input', function() {
+        const newValue = this.value;
+
+        // 如果文本变化，恢复按钮文字为"导入GitHub"
+        if (newValue !== currentInputValue) {
+            githubBtn.textContent = '导入GitHub';
+            currentInputValue = newValue;
+            isConnected = false; // 文本变化后重置连接状态
+        }
+    });
+
+    // 提供更新连接状态的方法（将在handleGitHubImport中调用）
+    window.updateGitHubConnectionStatus = function(status, url) {
+        isConnected = status;
+
+        // 如果连接成功且文本未变化，检查文件夹内容并更新按钮文字
+        if (status && githubInput.value === currentInputValue) {
+            // 调用file-operations.js中定义的afterImportSuccess函数
+            if (window.afterImportSuccess) {
+                window.afterImportSuccess();
+            }
+        } else {
+            // 连接失败或文本变化，恢复按钮文字为"导入GitHub"
+            githubBtn.textContent = '导入GitHub';
+        }
+    };
+}
+
+
+
+// 处理GitHub导入
+function handleGitHubImport() {
+    const githubInput = document.getElementById('github-input');
+    if (!githubInput) return;
+
+    const githubUrl = githubInput.value.trim();
+    if (!githubUrl) {
+        appendTerminal('请输入GitHub仓库地址', 'warning');
+        return;
+    }
+
+    appendTerminal(`正在处理GitHub仓库: ${githubUrl}`, 'info');
+
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.handle_github_import(githubUrl)
+            .then(response => {
+                if (response.success) {
+                    appendTerminal('GitHub仓库连接成功', 'success');
+
+                    // 连接成功后，检查当前目录是否有文件
+                    const currentPath = currentWorkingDirectory;
+
+                    if (!currentPath) {
+                        appendTerminal('当前工作目录为空', 'warning');
+                        window.updateGitHubConnectionStatus(false, githubUrl);
+                        return;
+                    }
+
+                    // 检查当前目录内容
+                    window.pywebview.api.get_files(currentPath)
+                        .then(filesResponse => {
+                            if (filesResponse.error) {
+                                appendTerminal(`检查目录失败: ${filesResponse.error}`, 'error');
+                                window.updateGitHubConnectionStatus(false, githubUrl);
+                            } else {
+                                // 检查文件夹是否有文件
+                                const hasFiles = filesResponse.contents && Array.isArray(filesResponse.contents) &&
+                                    filesResponse.contents.some(item => item.is_file);
+
+                                if (hasFiles) {
+                                    // 文件夹有文件，执行git pull
+                                    appendTerminal('目录已有文件，执行git pull操作', 'info');
+                                    window.pywebview.api.git_pull(currentPath)
+                                        .then(pullResponse => {
+                                            if (pullResponse.success) {
+                                                appendTerminal('git pull操作成功', 'success');
+
+                                                // 尝试关联仓库
+                                                appendTerminal('正在关联仓库...', 'info');
+                                                window.pywebview.api.associate_git_repo(currentPath, githubUrl)
+                                                    .then(associateResponse => {
+                                                        if (associateResponse.success) {
+                                                            appendTerminal('仓库关联成功', 'success');
+                                                        } else {
+                                                            appendTerminal(`仓库关联失败: ${associateResponse.error}`, 'warning');
+                                                        }
+                                                        // 更新连接状态，用于动态改变按钮文字
+                                                        window.updateGitHubConnectionStatus(true, githubUrl);
+                                                    })
+                                                    .catch(associateError => {
+                                                        appendTerminal(`仓库关联时发生错误: ${associateError}`, 'warning');
+                                                        // 即使关联失败，也更新连接状态
+                                                        window.updateGitHubConnectionStatus(true, githubUrl);
+                                                    });
+                                            } else {
+                                                appendTerminal(`git pull操作失败: ${pullResponse.error}`, 'error');
+                                                // 操作失败，重置连接状态
+                                                window.updateGitHubConnectionStatus(false, githubUrl);
+                                            }
+                                        })
+                                        .catch(pullError => {
+                                            appendTerminal(`git pull操作时发生错误: ${pullError}`, 'error');
+                                            window.updateGitHubConnectionStatus(false, githubUrl);
+                                        });
+                                } else {
+                                    // 文件夹没有文件，执行git clone
+                                    appendTerminal('目录没有文件，执行git clone操作', 'info');
+                                    window.pywebview.api.git_clone(githubUrl, currentPath)
+                                        .then(cloneResponse => {
+                                            if (cloneResponse.success) {
+                                                appendTerminal('git clone操作成功', 'success');
+
+                                                // 尝试关联仓库
+                                                appendTerminal('正在关联仓库...', 'info');
+                                                window.pywebview.api.associate_git_repo(currentPath, githubUrl)
+                                                    .then(associateResponse => {
+                                                        if (associateResponse.success) {
+                                                            appendTerminal('仓库关联成功', 'success');
+                                                        } else {
+                                                            appendTerminal(`仓库关联失败: ${associateResponse.error}`, 'warning');
+                                                        }
+                                                        // 更新连接状态，用于动态改变按钮文字
+                                                        window.updateGitHubConnectionStatus(true, githubUrl);
+                                                    })
+                                                    .catch(associateError => {
+                                                        appendTerminal(`仓库关联时发生错误: ${associateError}`, 'warning');
+                                                        // 即使关联失败，也更新连接状态
+                                                        window.updateGitHubConnectionStatus(true, githubUrl);
+                                                    });
+                                            } else {
+                                                appendTerminal(`git clone操作失败: ${cloneResponse.error}`, 'error');
+                                                // 操作失败，重置连接状态
+                                                window.updateGitHubConnectionStatus(false, githubUrl);
+                                            }
+                                        })
+                                        .catch(cloneError => {
+                                            appendTerminal(`git clone操作时发生错误: ${cloneError}`, 'error');
+                                            window.updateGitHubConnectionStatus(false, githubUrl);
+                                        });
+                                }
+                            }
+                        })
+                        .catch(filesError => {
+                            appendTerminal(`检查目录内容时发生错误: ${filesError}`, 'error');
+                            window.updateGitHubConnectionStatus(false, githubUrl);
+                        });
+                } else {
+                    appendTerminal(`连接失败: ${response.error}`, 'error');
+                    // 连接失败，重置连接状态
+                    window.updateGitHubConnectionStatus(false, githubUrl);
+                }
+            })
+            .catch(error => {
+                appendTerminal(`连接GitHub仓库时发生错误: ${error}`, 'error');
+                // 连接错误，重置连接状态
+                window.updateGitHubConnectionStatus(false, githubUrl);
+            });
+    } else {
+        appendTerminal('无法连接到后端服务', 'error');
+        // 连接错误，重置连接状态
+        window.updateGitHubConnectionStatus(false, githubUrl);
+    }
+}
 
 // 检查Git仓库状态
 function checkGitRepositoryStatus() {

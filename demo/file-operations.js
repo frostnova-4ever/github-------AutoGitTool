@@ -9,6 +9,8 @@ const fileIcons = {
 
 // 当前工作目录
 let currentWorkingDirectory = 'C:\\Users\\Documents';
+// 将当前工作目录暴露给全局作用域
+window.currentWorkingDirectory = currentWorkingDirectory;
 
 // 目录切换事件监听器
 function onDirectoryChanged(newPath) {
@@ -290,6 +292,13 @@ function loadFileList(path) {
     const p = path.trim();
     if (!p) return; // 如果路径为空，不执行
 
+    // 更新当前工作目录
+    currentWorkingDirectory = p;
+    // 通知其他模块目录已改变
+    if (window.onDirectoryChanged) {
+        window.onDirectoryChanged(p);
+    }
+
     appendTerminal(`请求目录: ${p}`);
     // 调用webview的JavaScript API获取文件列表
     if (window.pywebview && window.pywebview.api) {
@@ -326,6 +335,9 @@ function loadFileList(path) {
                         });
                         renderFileList();
                         appendTerminal(`列出完成: ${response.path || p}`, 'success');
+
+                        // 检查文件夹内容并更新按钮文字
+                        updateButtonText(response.contents);
                     }
                 }
             })
@@ -354,3 +366,68 @@ function renderFileList() {
         fileList.appendChild(row);
     });
 }
+
+// 更新按钮文字函数
+function updateButtonText(contents) {
+    // 获取按钮元素 - 使用正确的ID选择器
+    const githubBtn = document.getElementById('github-btn');
+
+    if (!githubBtn) {
+        console.warn('未找到GitHub按钮元素');
+        return;
+    }
+
+    // 检查文件夹内容
+    const hasFiles = contents && Array.isArray(contents) &&
+        contents.some(item => item.is_file);
+
+    // 更新按钮文字
+    if (hasFiles) {
+        githubBtn.textContent = '拉取';
+        githubBtn.title = '拉取最新代码';
+    } else {
+        githubBtn.textContent = '克隆';
+        githubBtn.title = '克隆仓库到当前目录';
+    }
+
+    console.log(`文件夹${hasFiles ? '有' : '没有'}文件，按钮文字更新为: ${githubBtn.textContent}`);
+}
+
+// 新增：导入成功后检查文件夹内容
+function afterImportSuccess() {
+    // 获取当前文件夹路径
+    const currentPath = currentWorkingDirectory;
+
+    if (!currentPath) {
+        console.warn('当前工作目录为空');
+        return;
+    }
+
+    appendTerminal(`导入成功，检查文件夹内容: ${currentPath}`);
+
+    // 调用webview API获取文件夹内容
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.get_files(currentPath)
+            .then(response => {
+                if (response.error) {
+                    appendTerminal(`检查文件夹失败: ${response.error}`, 'error');
+                } else {
+                    // 更新按钮文字
+                    updateButtonText(response.contents);
+                    appendTerminal(`文件夹检查完成，按钮已更新`, 'success');
+                }
+            })
+            .catch(error => {
+                appendTerminal(`检查文件夹失败: ${error}`, 'error');
+            });
+    } else {
+        // 模拟模式
+        appendTerminal('模拟模式: 检查文件夹内容', 'info');
+        // 模拟有文件的情况
+        updateButtonText([{ name: 'file1.txt', is_file: true }]);
+    }
+}
+
+// 将函数暴露给全局作用域，以便其他模块调用
+window.afterImportSuccess = afterImportSuccess;
+window.updateButtonText = updateButtonText;

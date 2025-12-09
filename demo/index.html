@@ -72,8 +72,8 @@
                             <input id="commit-input" class="scm-commit-input" placeholder="填写提交信息（例如: 修复样式）">
                             <div class="scm-dropdown">
                                 <button id="scm-main-btn" class="scm-btn primary">
-                                    提交
-                                    <span class="scm-dropdown-arrow">▼</span>
+                                    <span class="scm-btn-text">提交</span>
+                                    <span class="scm-dropdown-arrow" id="scm-dropdown-arrow">▼</span>
                                 </button>
                                 <div id="scm-dropdown-menu" class="scm-dropdown-menu">
                                     <button id="commit-btn" class="scm-dropdown-item" data-action="commit">提交</button>
@@ -152,6 +152,7 @@
                     <input type="text" id="github-input" class="url-input" placeholder="填入 GitHub 仓库 URL，例如 https://github.com/user/repo">
                     <button class="control-btn github" id="github-btn">导入 GitHub</button>
                 </div>
+
             </div>
 
             <!-- 右侧面板文件列表 -->
