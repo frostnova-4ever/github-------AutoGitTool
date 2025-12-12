@@ -1,0 +1,43 @@
+# 应用配置文件
+# 使用YAML格式存储配置信息，支持注释和复杂数据结构
+
+# 服务器配置
+server:
+  host: localhost  # 服务器主机地址
+  port: 8000       # 服务器端口号
+  debug: true      # 是否启用调试模式
+
+# GitHub 配置
+github:
+  api_url: https://api.github.com  # GitHub API地址
+  timeout: 30                      # 请求超时时间（秒）
+  default_branch: main             # 默认分支
+  clone_depth: 1                   # 克隆深度（浅克隆）
+
+# 界面配置
+ui:
+  theme: default        # 主题名称
+  language: zh-CN       # 界面语言
+  show_hidden_files: false  # 是否显示隐藏文件
+  default_view: list    # 默认文件视图（list/grid）
+
+# 本地存储配置
+storage:
+  base_path: ./data     # 基础存储路径
+  max_file_size: 10485760  # 最大文件大小（10MB）
+  allowed_extensions:    # 允许的文件扩展名
+    - .txt
+    - .md
+    - .json
+    - .yaml
+    - .yml
+
+# 日志配置
+logging:
+  level: INFO           # 日志级别
+  file: ./logs/app.log  # 日志文件路径
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"  # 日志格式
+
+userSettings:
+  github_repo:   # 默认仓库
+  name:  # 默认用户名
