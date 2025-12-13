@@ -105,7 +105,14 @@ class GitHubCommand:
         
         # 执行提交
         commit_command = f"git commit -m \"{commit_message}\""
-        return execute_system_command_with_response(commit_command, cwd=repo_path)
+        commit_result = execute_system_command_with_response(commit_command, cwd=repo_path)
+        
+        # 检查是否是因为没有需要提交的内容而导致的"失败"
+        if not commit_result["success"] and "nothing to commit" in commit_result["error"]:
+            # 这不是真正的错误，而是正常状态
+            return create_response_dict(success=True, output=commit_result["error"] or "没有需要提交的内容")
+        
+        return commit_result
     
     @staticmethod
     def git_push(repo_path, branch="main"):
