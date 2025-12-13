@@ -81,7 +81,8 @@ class AutoGitHubCommand(GitHubCommand):
         task_thread.stop_event = stop_event
         task_thread.start()
         
-        return create_response_dict(success=True, thread_id=id(task_thread), interval_seconds=interval_seconds, message="自动提交推送任务已启动")
+        # 为了保持向后兼容性，将thread_id同时放在data字段和结果根级
+        return create_response_dict(success=True, data={"thread_id": id(task_thread)}, thread_id=id(task_thread), interval_seconds=interval_seconds, message="自动提交推送任务已启动")
     
     @staticmethod
     def stop_auto_commit_push(thread_info):
