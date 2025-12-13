@@ -14,7 +14,7 @@ userSettings:
       switch: false
     auto_submit_and_push:
       switch: false
-      time: 10 #s
+      time: 10
   default_view: grid
   github_repo: https://github.com/all/config.git
   language: zh-CN
