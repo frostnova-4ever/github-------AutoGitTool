@@ -53,7 +53,14 @@ class AutoGitHubCommand(GitHubCommand):
                     if result and result.get('success'):
                         print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送成功")
                     else:
-                        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送失败: {result.get('error', '未知错误')}")
+                        error_msg = "未知错误"
+                        if result:
+                            # 检查是否有error字段，即使它是空字符串
+                            if 'error' in result:
+                                error_msg = result['error'] or "无错误信息"
+                            elif 'output' in result:
+                                error_msg = result['output'] or "无错误信息"
+                        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送失败: {error_msg}")
                 except Exception as e:
                     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送任务发生异常: {str(e)}")
                 
