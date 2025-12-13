@@ -29,15 +29,14 @@ class ConfigManager:
                 self.config = yaml.safe_load(file)
                 if self.config is None:
                     self.config = {}
-            print(f"成功加载配置文件: {self.config_path}")
         except FileNotFoundError:
-            print(f"警告: 配置文件不存在 - {self.config_path}")
+            # 配置文件不存在，使用默认配置
             self.config = {}
-        except yaml.YAMLError as e:
-            print(f"错误: 解析配置文件失败 - {e}")
+        except yaml.YAMLError:
+            # 解析配置文件失败，使用默认配置
             self.config = {}
-        except Exception as e:
-            print(f"错误: 加载配置文件失败 - {e}")
+        except Exception:
+            # 加载配置文件失败，使用默认配置
             self.config = {}
     
     def get(self, key_path, default=None):
@@ -86,10 +85,8 @@ class ConfigManager:
         try:
             with open(self.config_path, 'w', encoding='utf-8') as file:
                 yaml.dump(self.config, file, default_flow_style=False, allow_unicode=True, indent=2)
-            print(f"成功保存配置文件: {self.config_path}")
             return True
-        except Exception as e:
-            print(f"错误: 保存配置文件失败 - {e}")
+        except Exception:
             return False
     
     def get_all_config(self):

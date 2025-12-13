@@ -20,6 +20,12 @@ def execute_system_command(command, cwd=None):
         return "", str(e), -1
 
 
+def execute_system_command_with_response(command, cwd=None):
+    """执行系统命令并返回统一格式的响应"""
+    stdout, stderr, returncode = execute_system_command(command, cwd)
+    return create_response_dict(success=returncode == 0, output=stdout, error=stderr, cwd=cwd)
+
+
 class GitHubCommand:
     """GitHub命令处理类"""
     
@@ -40,11 +46,7 @@ class GitHubCommand:
     def test_github_connection_with_git(github_url):
         """测试GitHub连接"""
         command = f"git ls-remote --heads {github_url}"
-        stdout, stderr, returncode = execute_system_command(command)
-        if returncode == 0:
-            return create_response_dict(success=True, output=stdout)
-        else:
-            return create_response_dict(success=False, error=stderr or "连接失败")
+        return execute_system_command_with_response(command)
     
     @staticmethod
     def handle_github_import(github_url):
@@ -60,11 +62,7 @@ class GitHubCommand:
     def git_clone(github_url, target_path):
         """克隆GitHub仓库"""
         command = f"git clone {github_url} {target_path}"
-        stdout, stderr, returncode = execute_system_command(command)
-        if returncode == 0:
-            return create_response_dict(success=True, output=stdout)
-        else:
-            return create_response_dict(success=False, error=stderr or "克隆失败")
+        return execute_system_command_with_response(command)
     
     @staticmethod
     def git_pull(repo_path, remote_url=None):
@@ -78,11 +76,7 @@ class GitHubCommand:
                 execute_system_command(f"git remote add origin {remote_url}", cwd=repo_path)
         
         # 执行拉取
-        stdout, stderr, returncode = execute_system_command("git pull", cwd=repo_path)
-        if returncode == 0:
-            return create_response_dict(success=True, output=stdout)
-        else:
-            return create_response_dict(success=False, error=stderr or "拉取失败")
+        return execute_system_command_with_response("git pull", cwd=repo_path)
     
     @staticmethod
     def associate_git_repo(repo_path, remote_url):
@@ -98,11 +92,38 @@ class GitHubCommand:
         else:
             command = f"git remote add origin {remote_url}"
         
-        stdout, stderr, returncode = execute_system_command(command, cwd=repo_path)
-        if returncode == 0:
-            return create_response_dict(success=True, output=stdout)
-        else:
-            return create_response_dict(success=False, error=stderr or "关联失败")
+        return execute_system_command_with_response(command, cwd=repo_path)
+    
+    @staticmethod
+    def git_commit(repo_path, commit_message):
+        """提交Git仓库更改"""
+        # 添加所有更改
+        add_result = execute_system_command_with_response("git add .", cwd=repo_path)
+        
+        if not add_result["success"]:
+            return create_response_dict(success=False, error=add_result["error"] or "添加更改失败")
+        
+        # 执行提交
+        commit_command = f"git commit -m \"{commit_message}\""
+        return execute_system_command_with_response(commit_command, cwd=repo_path)
+    
+    @staticmethod
+    def git_push(repo_path, branch="main"):
+        """推送Git仓库更改"""
+        push_command = f"git push origin {branch}"
+        return execute_system_command_with_response(push_command, cwd=repo_path)
+    
+    @staticmethod
+    def git_commit_and_push(repo_path, commit_message, branch="main"):
+        """
+        提交并推送Git仓库更改
+        """
+        # 先提交
+        commit_result = GitHubCommand.git_commit(repo_path, commit_message)
+        if not commit_result["success"]:
+            return commit_result
+        # 再推送
+        return GitHubCommand.git_push(repo_path, branch)
 
 
 # 保持原有函数接口不变，向后兼容
@@ -125,6 +146,18 @@ def associate_git_repo(repo_path, remote_url):
     return GitHubCommand.associate_git_repo(repo_path, remote_url)
 
 
+def git_commit(repo_path, commit_message):
+    return GitHubCommand.git_commit(repo_path, commit_message)
+
+
+def git_push(repo_path, branch="main"):
+    return GitHubCommand.git_push(repo_path, branch)
+
+
+def git_commit_and_push(repo_path, commit_message, branch="main"):
+    return GitHubCommand.git_commit_and_push(repo_path, commit_message, branch)
+
+
 def execute_command(command, cwd=None):
     """执行系统命令"""
     if not cwd:
@@ -140,11 +173,11 @@ def execute_command(command, cwd=None):
         new_dir = os.path.normpath(new_dir)
         # 检查路径是否存在
         if os.path.exists(new_dir) and os.path.isdir(new_dir):
-            return {"output": f"切换到目录: {new_dir}", "error": "", "cwd": new_dir}
+            return create_response_dict(success=True, output=f"切换到目录: {new_dir}", error="", cwd=new_dir)
         else:
-            return {"output": "", "error": f"目录不存在: {new_dir}", "cwd": cwd}
+            return create_response_dict(success=False, output="", error=f"目录不存在: {new_dir}", cwd=cwd)
     
     # 执行系统命令
     stdout, stderr, returncode = execute_system_command(command, cwd=cwd)
     
-    return {"output": stdout, "error": stderr, "cwd": cwd}
+    return create_response_dict(success=returncode == 0, output=stdout, error=stderr, cwd=cwd)

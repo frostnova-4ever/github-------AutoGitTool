@@ -145,8 +145,20 @@ function setupUI() {
     // 右侧面板的列出路径按钮事件监听器
     const rightListBtn = document.getElementById('right-panel-list-btn');
     if (rightListBtn) {
-        rightListBtn.addEventListener('click', selectFolder);
+        rightListBtn.addEventListener('click', function() {
+            // 获取输入框中的路径
+            const pathInput = document.getElementById('right-panel-path-input');
+            if (pathInput && pathInput.value.trim()) {
+                // 如果输入框中有路径，直接加载
+                loadFileList(pathInput.value);
+            } else {
+                // 如果输入框中没有路径，打开文件夹选择对话框
+                selectFolder();
+            }
+        });
     }
+
+
 
     // 清空终端按钮事件监听器
     const clearBtn = document.getElementById('clear-btn');
@@ -334,6 +346,9 @@ function setupUI() {
     setupGitHubButtonTextUpdater();
 
     // GitHub API功能按钮事件
+
+    // 调用loadConfigPath函数加载配置
+    loadConfigPath();
 
 }
 
@@ -533,8 +548,8 @@ function checkGitRepositoryStatus() {
 function setupAdditionalEventListeners() {
     // 监听pywebviewready事件，确保JS API完全初始化
     window.addEventListener('_pywebviewready', () => {
-        console.log('_pywebviewready事件触发，重新加载常用路径');
         loadCommonPaths();
+        loadConfigPath();
     });
 
     // 初始化终端
@@ -549,6 +564,36 @@ function setupAdditionalEventListeners() {
 window.onDirectoryChanged = function(newPath) {
     // 重新检查Git仓库状态
     checkGitRepositoryStatus();
+}
+
+// 加载配置路径到输入框
+function loadConfigPath() {
+    if (window.pywebview && window.pywebview.api) {
+        window.pywebview.api.get_config_path()
+            .then(response => {
+                if (response.success && response.yaml_content) {
+                    const pathInput = document.getElementById('right-panel-path-input');
+                    if (pathInput) {
+                        // 将path值显示在输入框中
+                        pathInput.value = response.yaml_content;
+                        // 自动调用loadFileList刷新文件管理器
+                        if (response.yaml_content.trim()) {
+                            loadFileList(response.yaml_content);
+                        }
+                    } else {
+                        // 如果路径输入框不存在，延迟一段时间后重试
+                        setTimeout(loadConfigPath, 100);
+                    }
+                }
+            })
+            .catch(error => {
+                // 发生错误时也重试
+                setTimeout(loadConfigPath, 1000);
+            });
+    } else {
+        // 如果pywebview API还没有准备好，延迟一段时间后重试
+        setTimeout(loadConfigPath, 100);
+    }
 }
 
 // 在DOM加载完成后执行

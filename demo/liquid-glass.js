@@ -7,7 +7,6 @@
     // Check if liquid glass already exists and destroy it
     if (window.liquidGlass) {
         window.liquidGlass.destroy();
-        console.log('Previous liquid glass effect removed.');
     }
 
     // Utility functions
@@ -258,7 +257,7 @@
                 }
             });
 
-            console.log('Liquid Glass effect applied to file manager!');
+
 
             // Return shader instance so it can be removed if needed
             window.liquidGlass = shader;
@@ -305,7 +304,7 @@
                 shaders.push(shader);
             });
 
-            console.log('Liquid Glass effect applied to workflow nodes!');
+
 
             // Store shaders so they can be removed if needed
             window.workflowNodeShaders = shaders;

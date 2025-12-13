@@ -1,0 +1,24 @@
+test_key: test_value
+test_module_key: test_module_value
+test_nested:
+  key1:
+    key2: nested_value
+userSettings:
+  allowed_extensions:
+  - .py
+  - .js
+  - .html
+  - .css
+  auto:
+    auto_submit:
+      switch: false
+    auto_submit_and_push:
+      switch: false
+      time: 10 #s
+  default_view: grid
+  github_repo: https://github.com/all/config.git
+  language: zh-CN
+  name: all_user
+  path: F:\app\Tool\test
+  show_hidden_files: true
+  theme: dark

@@ -29,71 +29,223 @@
             color: var(--muted);
             font-size: 13px;
         }
+        
+        .settings-section {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--white);
+        }
+        
+        .settings-section h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .setting-item {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .setting-item label {
+            width: 120px;
+            font-size: 13px;
+        }
+        
+        .setting-item input {
+            flex: 1;
+            padding: 5px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+        }
+        
+        .success {
+            color: #28a745;
+        }
+        
+        .error {
+            color: #dc3545;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h2>自动提交（独立页面）</h2>
+
+        <div class="settings-section">
+            <h3>自动提交设置</h3>
+            <div class="setting-item">
+                <label for="repo-path">仓库路径：</label>
+                <input type="text" id="repo-path" placeholder="输入Git仓库路径" value="..\">
+            </div>
+            <div class="setting-item">
+                <label for="interval">间隔时间（秒）：</label>
+                <input type="number" id="interval" placeholder="输入提交间隔" value="60">
+            </div>
+            <div class="setting-item">
+                <label for="commit-message">提交信息：</label>
+                <input type="text" id="commit-message" placeholder="输入提交信息" value="自动提交 - 定时任务">
+            </div>
+            <div class="setting-item">
+                <label for="branch">分支名称：</label>
+                <input type="text" id="branch" placeholder="输入分支名称" value="main">
+            </div>
+        </div>
+
         <div class="top-actions">
-            <button id="auto-start-btn" class="control-btn">启动</button>
-            <button id="auto-stop-btn" class="control-btn" style="display:none;">停止</button>
+            <button id="auto-start-btn" class="control-btn">启动自动提交</button>
+            <button id="auto-stop-btn" class="control-btn" style="display:none;">停止自动提交</button>
             <a href="index.html" class="plain-link">返回主界面</a>
         </div>
 
         <div id="node-info-box" class="node-info" style="border:1px solid var(--border-color); padding:12px; border-radius:6px; background:var(--white);">
-            <h3 style="margin-bottom:8px; font-size:15px;">节点信息</h3>
-            <div class="node-field"><strong>节点：</strong><span id="node-name">未连接</span></div>
+            <h3 style="margin-bottom:8px; font-size:15px;">任务信息</h3>
+            <div class="node-field"><strong>节点：</strong><span id="node-name">本地节点</span></div>
             <div class="node-field"><strong>状态：</strong><span id="node-status">空闲</span></div>
             <div class="node-field"><strong>最后运行：</strong><span id="node-last">-</span></div>
             <div class="node-field" style="margin-top:8px;"><strong>详细：</strong>
-                <pre id="node-details" style="white-space:pre-wrap; background:transparent; border:none; padding:0; margin:0;">无</pre>
+                <pre id="node-details" style="white-space:pre-wrap; background:transparent; border:none; padding:0; margin:0;">准备就绪</pre>
             </div>
         </div>
 
         <div style="margin-top:12px;">
-            <div class="note">提示：这是独立页面版本的自动提交界面。点击启动后会在页面内模拟任务运行。</div>
+            <div class="note">提示：这是独立页面版本的自动提交界面。点击启动后会调用后端API执行实际的Git自动提交推送任务。</div>
         </div>
     </div>
 
     <script>
         (function() {
+            let currentTaskInfo = null;
+            let statusUpdateInterval = null;
+
             function setNodeInfo(info) {
                 const name = document.getElementById('node-name');
                 const status = document.getElementById('node-status');
                 const last = document.getElementById('node-last');
                 const details = document.getElementById('node-details');
                 if (name) name.textContent = info.name || '本地节点';
-                if (status) status.textContent = info.status || '空闲';
+                if (status) {
+                    status.textContent = info.status || '空闲';
+                    status.className = info.status === '运行中' ? 'success' : info.status === '错误' ? 'error' : '';
+                }
                 if (last) last.textContent = info.last || '-';
                 if (details) details.textContent = info.details || '-';
+            }
+
+            function updateStatus() {
+                // 这里可以定期检查任务状态
+                setNodeInfo({
+                    name: '本地节点',
+                    status: '运行中',
+                    last: new Date().toLocaleString(),
+                    details: currentTaskInfo ?
+                        `任务ID: ${currentTaskInfo.thread_id}\n` +
+                        `仓库路径: ${document.getElementById('repo-path').value}\n` +
+                        `间隔时间: ${document.getElementById('interval').value}秒\n` +
+                        `提交信息: ${document.getElementById('commit-message').value}\n` +
+                        `分支: ${document.getElementById('branch').value}\n` +
+                        `上次更新: ${new Date().toLocaleString()}` : '准备就绪'
+                });
             }
 
             document.addEventListener('DOMContentLoaded', function() {
                 const start = document.getElementById('auto-start-btn');
                 const stop = document.getElementById('auto-stop-btn');
+
                 if (!start || !stop) return;
 
                 start.addEventListener('click', function() {
-                    start.style.display = 'none';
-                    stop.style.display = '';
-                    setNodeInfo({
-                        name: '本地节点',
-                        status: '运行中',
-                        last: new Date().toLocaleString(),
-                        details: '自动任务已在独立页面启动。'
-                    });
+                    // 检查pywebview API是否可用
+                    if (!window.pywebview || !window.pywebview.api) {
+                        alert('pywebview API不可用，请在应用程序中运行此页面');
+                        return;
+                    }
+
+                    // 获取设置
+                    const repoPath = document.getElementById('repo-path').value;
+                    const interval = parseInt(document.getElementById('interval').value) || 60;
+                    const commitMessage = document.getElementById('commit-message').value || '自动提交 - 定时任务';
+                    const branch = document.getElementById('branch').value || 'main';
+
+                    // 调用后端API启动自动提交
+                    window.pywebview.api.setup_auto_commit_push(repoPath, interval, commitMessage, branch)
+                        .then(result => {
+                            if (result.success) {
+                                currentTaskInfo = result.data;
+                                start.style.display = 'none';
+                                stop.style.display = '';
+
+                                // 设置状态更新定时器
+                                statusUpdateInterval = setInterval(updateStatus, 1000);
+
+                                setNodeInfo({
+                                    name: '本地节点',
+                                    status: '运行中',
+                                    last: new Date().toLocaleString(),
+                                    details: `自动提交任务已启动\n任务ID: ${currentTaskInfo.thread_id}\n仓库路径: ${repoPath}\n间隔时间: ${interval}秒`
+                                });
+                            } else {
+                                alert(`启动失败: ${result.error}`);
+                                setNodeInfo({
+                                    name: '本地节点',
+                                    status: '错误',
+                                    last: new Date().toLocaleString(),
+                                    details: `启动失败: ${result.error}`
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('启动自动提交错误:', error);
+                            alert(`启动失败: ${error}`);
+                            setNodeInfo({
+                                name: '本地节点',
+                                status: '错误',
+                                last: new Date().toLocaleString(),
+                                details: `启动失败: ${error}`
+                            });
+                        });
                 });
 
                 stop.addEventListener('click', function() {
-                    stop.style.display = 'none';
-                    start.style.display = '';
-                    setNodeInfo({
-                        name: '本地节点',
-                        status: '已停止',
-                        last: new Date().toLocaleString(),
-                        details: '自动任务已停止。'
-                    });
+                    if (!window.pywebview || !window.pywebview.api || !currentTaskInfo) {
+                        return;
+                    }
+
+                    // 调用后端API停止自动提交
+                    window.pywebview.api.stop_auto_commit_push(currentTaskInfo)
+                        .then(result => {
+
+                            // 清除状态更新定时器
+                            if (statusUpdateInterval) {
+                                clearInterval(statusUpdateInterval);
+                                statusUpdateInterval = null;
+                            }
+
+                            currentTaskInfo = null;
+                            stop.style.display = 'none';
+                            start.style.display = '';
+
+                            setNodeInfo({
+                                name: '本地节点',
+                                status: '已停止',
+                                last: new Date().toLocaleString(),
+                                details: result.success ? '自动提交任务已停止' : `停止失败: ${result.error}`
+                            });
+                        })
+                        .catch(error => {
+                            console.error('停止自动提交错误:', error);
+                            setNodeInfo({
+                                name: '本地节点',
+                                status: '错误',
+                                last: new Date().toLocaleString(),
+                                details: `停止失败: ${error}`
+                            });
+                        });
                 });
             });
         })();

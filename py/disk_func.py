@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from response_utils import create_response_dict
 import format_func
+from data_processing.update_yaml import update_path_config
 
 
 def get_directory_size(path):
@@ -109,12 +110,19 @@ def is_git_repository(path):
 
 def get_files(path):
     """
-    获取指定路径下的文件列表
+    获取指定路径下的文件列表，并自动保存当前路径
     Args:
         path (str): 目录路径
     Returns:
         dict: 文件列表信息
     """
+    # 自动保存当前路径到配置文件
+    try:
+        update_path_config({'path': path})
+    except Exception:
+        # 忽略保存路径配置失败的情况
+        pass
+    
     contents = get_directory_contents(path)
 
     # 如果返回的是错误信息，直接返回
@@ -196,8 +204,9 @@ def list_common_paths():
                         else:
                             display_path = path
                         paths.append({"name": display_name,"path": path,"display_path": display_path,"type": "directory"})
-            except Exception as e:
-                print(f"添加Windows特殊文件夹失败: {str(e)}")
+            except Exception:
+                # 忽略添加Windows特殊文件夹失败的情况
+                pass
             
             # 添加Windows磁盘驱动器
             try:
@@ -222,9 +231,10 @@ def list_common_paths():
                             display_name = f"本地磁盘 ({letter}:)"
                         
                         paths.append({"name": display_name,"path": drive_path,"type": "drive" })
-            except Exception as e:
-                print(f"添加Windows磁盘驱动器失败: {str(e)}")
-    
+            except Exception:
+                # 忽略添加Windows磁盘驱动器失败的情况
+                pass
+        
         # 添加类Unix系统常见路径
         else:
             try:
@@ -253,8 +263,9 @@ def list_common_paths():
                     paths.append({"name": "sbin", "path": "/sbin", "type": "directory"})
                 if os.path.exists("/etc"):
                     paths.append({"name": "etc", "path": "/etc", "type": "directory"})
-            except Exception as e:
-                print(f"添加类Unix系统路径失败: {str(e)}")
+            except Exception:
+                # 忽略添加类Unix系统路径失败的情况
+                pass
     except Exception as e:
         return create_response_dict(success=False, error=f"列出常用路径失败: {str(e)}")
     return create_response_dict(success=True, paths=paths)

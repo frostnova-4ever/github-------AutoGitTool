@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路径加载测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        .url-input {
+            width: 500px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+        
+        .control-btn {
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>路径加载测试</h1>
+
+    <div class="test-section">
+        <h2>路径输入框</h2>
+        <input type="text" id="right-panel-path-input" class="url-input" placeholder="在此输入 Windows 路径，例如 C:\Users\Public">
+        <button class="control-btn" onclick="testLoadConfigPath()">测试加载路径</button>
+    </div>
+
+    <div class="test-section">
+        <h2>控制台日志</h2>
+        <div id="console-log" style="background: #f0f0f0; padding: 10px; height: 300px; overflow-y: scroll;"></div>
+    </div>
+
+    <!-- 引入必要的JavaScript文件 -->
+    <script src="js/config.js"></script>
+    <script>
+        // 重写console.log以在页面上显示
+        const originalLog = console.log;
+        const originalError = console.error;
+        const consoleLogDiv = document.getElementById('console-log');
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            const logEntry = document.createElement('div');
+            logEntry.textContent = new Date().toLocaleTimeString() + ' - ' + args.join(' ');
+            logEntry.style.color = '#333';
+            consoleLogDiv.appendChild(logEntry);
+            consoleLogDiv.scrollTop = consoleLogDiv.scrollHeight;
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            const logEntry = document.createElement('div');
+            logEntry.textContent = new Date().toLocaleTimeString() + ' - ERROR: ' + args.join(' ');
+            logEntry.style.color = 'red';
+            consoleLogDiv.appendChild(logEntry);
+            consoleLogDiv.scrollTop = consoleLogDiv.scrollHeight;
+        };
+
+        // 测试函数
+        function testLoadConfigPath() {
+            loadConfigPath();
+        }
+
+        // 页面加载完成后自动测试
+        window.addEventListener('load', () => {
+            loadConfigPath();
+        });
+    </script>
+</body>
+
+</html>

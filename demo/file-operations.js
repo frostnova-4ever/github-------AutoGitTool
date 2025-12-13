@@ -239,22 +239,14 @@ function selectFolder() {
 // 加载常用路径
 function loadCommonPaths() {
     // 检查webview API是否可用
-    console.log('loadCommonPaths: 开始');
-    console.log('loadCommonPaths: window.pywebview:', window.pywebview);
-    console.log('loadCommonPaths: window.pywebview.api:', window.pywebview ? window.pywebview.api : '不可用');
-
     if (window.pywebview && window.pywebview.api) {
         // 调用list_paths接口获取常用路径
-        console.log('loadCommonPaths: 调用window.pywebview.api.list_paths()');
         window.pywebview.api.list_paths()
             .then(response => {
-                console.log('loadCommonPaths: list_paths响应:', response);
-
                 if (response.error) {
                     console.error('获取常用路径失败:', response.error);
                     appendTerminal(`获取常用路径失败: ${response.error}`, 'error');
                 } else if (Array.isArray(response.paths)) {
-                    console.log('loadCommonPaths: 调用createPathSelector()');
                     // 创建路径选择下拉菜单
                     createPathSelector(response.paths);
                 } else {
@@ -267,7 +259,6 @@ function loadCommonPaths() {
                 appendTerminal(`调用list_paths接口失败: ${error}`, 'error');
             });
     } else {
-        console.error('webview API不可用');
         appendTerminal('无法连接到文件系统', 'error');
     }
 }
@@ -283,8 +274,12 @@ function createPathSelector(paths) {
 
 // 为指定面板添加路径选择功能
 function addPathSelectorToPanel(inputSelector, paths) {
-    // 浏览按钮已移除，不再创建路径选择功能
-    return;
+    // 获取输入框元素
+    const inputElement = document.querySelector(inputSelector);
+    if (!inputElement) return;
+
+    // 遍历路径，为每个路径添加到输入框的选项列表中
+    // 这里可以根据需要实现具体的路径选择功能
 }
 
 // 全局函数：加载文件列表
@@ -390,7 +385,7 @@ function updateButtonText(contents) {
         githubBtn.title = '克隆仓库到当前目录';
     }
 
-    console.log(`文件夹${hasFiles ? '有' : '没有'}文件，按钮文字更新为: ${githubBtn.textContent}`);
+
 }
 
 // 新增：导入成功后检查文件夹内容
