@@ -108,9 +108,12 @@ class GitHubCommand:
         commit_result = execute_system_command_with_response(commit_command, cwd=repo_path)
         
         # 检查是否是因为没有需要提交的内容而导致的"失败"
-        if not commit_result["success"] and "nothing to commit" in commit_result["error"]:
-            # 这不是真正的错误，而是正常状态
-            return create_response_dict(success=True, output=commit_result["error"] or "没有需要提交的内容")
+        if not commit_result["success"]:
+            # 获取错误信息，优先检查error字段，然后是output字段
+            error_message = commit_result.get("error", "") or commit_result.get("output", "")
+            if "nothing to commit" in error_message:
+                # 这不是真正的错误，而是正常状态
+                return create_response_dict(success=True, output=error_message or "没有需要提交的内容")
         
         return commit_result
     
