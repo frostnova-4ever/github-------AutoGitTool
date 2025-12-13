@@ -146,7 +146,7 @@
                     details: currentTaskInfo ?
                         `任务ID: ${currentTaskInfo.thread_id}\n` +
                         `仓库路径: ${document.getElementById('repo-path').value}\n` +
-                        `间隔时间: ${document.getElementById('interval').value}秒\n` +
+                        `间隔时间: ${currentTaskInfo.interval_seconds || document.getElementById('interval').value}秒\n` +
                         `提交信息: ${document.getElementById('commit-message').value}\n` +
                         `分支: ${document.getElementById('branch').value}\n` +
                         `上次更新: ${new Date().toLocaleString()}` : '准备就绪'
@@ -187,7 +187,7 @@
                                     name: '本地节点',
                                     status: '运行中',
                                     last: new Date().toLocaleString(),
-                                    details: `自动提交任务已启动\n任务ID: ${currentTaskInfo.thread_id}\n仓库路径: ${repoPath}\n间隔时间: ${interval}秒`
+                                    details: `自动提交任务已启动\n任务ID: ${currentTaskInfo.thread_id}\n仓库路径: ${repoPath}\n间隔时间: ${currentTaskInfo.interval_seconds || interval}秒`
                                 });
                             } else {
                                 alert(`启动失败: ${result.error}`);

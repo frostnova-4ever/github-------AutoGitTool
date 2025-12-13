@@ -49,19 +49,19 @@ class AutoGitHubCommand(GitHubCommand):
             """自动提交推送任务函数"""
             while not (stop_event and stop_event.is_set()):
                 try:
-                result = AutoGitHubCommand.git_commit_and_push(repo_path, commit_message, branch)
-                if result and result.get('success'):
-                    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送成功")
-                else:
-                    error_msg = "未知错误"
-                    if result:
-                        # 先尝试获取error字段
-                        if 'error' in result:
-                            error_msg = result['error'] or "无错误信息"
-                        # 再尝试获取output字段
-                        elif 'output' in result:
-                            error_msg = result['output'] or "无错误信息"
-                    print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送失败: {error_msg}")
+                    result = AutoGitHubCommand.git_commit_and_push(repo_path, commit_message, branch)
+                    if result and result.get('success'):
+                        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送成功")
+                    else:
+                        error_msg = "未知错误"
+                        if result:
+                            # 先尝试获取error字段
+                            if 'error' in result:
+                                error_msg = result['error'] or "无错误信息"
+                            # 再尝试获取output字段
+                            elif 'output' in result:
+                                error_msg = result['output'] or "无错误信息"
+                        print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送失败: {error_msg}")
                 except Exception as e:
                     print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 自动提交推送任务发生异常: {str(e)}")
                 
