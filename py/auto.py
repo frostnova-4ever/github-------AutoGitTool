@@ -78,7 +78,7 @@ class AutoGitHubCommand(GitHubCommand):
         
         # 创建并启动线程
         task_thread = threading.Thread(target=auto_commit_push_task, daemon=True)
-        task_thread.stop_event = stop_event
+        task_thread.stop_event = stop_event  # 将stop_event附加到线程对象上
         task_thread.start()
         
         # 确保所有数据都在data字段内，满足前端需求
